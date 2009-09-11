@@ -7,7 +7,11 @@ import euclid
 import math
 import pyglet
 from pyglet.gl import *
+import sys
 from xml.dom import minidom
+
+def log(message):
+    sys.stderr.write('ride: %s\n' % str(message))
 
 def sign(x):
     return -1 if x < 0 else 1
@@ -71,12 +75,49 @@ class Level(object):
         self.init_world(lower_bound, upper_bound)
         self.start = None
         self.goal = None
+        self.vehicle = None
+        self.throttle = 0
+        self.spin = 0
 
     def init_world(self, lower_bound, upper_bound):
         aabb = b2AABB()
         aabb.lowerBound = lower_bound
         aabb.upperBound = upper_bound
         self.world = b2World(aabb, config.gravity, True)
+
+    def step(self, dt):
+        for spring in self.vehicle.springs:
+            spring.step(dt)
+
+        if self.throttle:
+            motor_torque = (-config.motor_torque -
+                            config.motor_damping *
+                            self.vehicle.back_wheel.body.angularVelocity)
+            self.vehicle.back_wheel.body.ApplyTorque(motor_torque)
+
+        spin_torque = (self.spin * config.spin_torque -
+                       config.spin_damping *
+                       self.vehicle.frame.body.angularVelocity)
+        self.vehicle.frame.body.ApplyTorque(spin_torque)
+
+        self.world.Step(dt, 10, 10)
+
+    def debug_draw(self):
+        for body in self.world.bodyList:
+            actor = body.userData
+            if actor is not None:
+                actor.debug_draw()
+        for joint in self.world.jointList:
+            if isinstance(joint, b2DistanceJoint):
+                glBegin(GL_LINES)
+                glVertex2f(*joint.GetAnchor1().tuple())
+                glVertex2f(*joint.GetAnchor2().tuple())
+                glEnd()
+        for spring in self.vehicle.springs:
+            glBegin(GL_LINES)
+            glVertex2f(*spring.anchor_1.tuple())
+            glVertex2f(*spring.anchor_2.tuple())
+            glEnd()
 
 def parse_style(style):
     lines = (l.strip() for l in style.split(';'))
@@ -99,7 +140,7 @@ def load_level(path):
     for child_node in svg_element.childNodes:
         if child_node.nodeType == minidom.Node.ELEMENT_NODE:
             parse_element(child_node, transform, level)
-    print level.start, level.goal
+    return level
 
 def parse_transform(transform_str):
     name, args = transform_str.split('(')
@@ -107,8 +148,14 @@ def parse_transform(transform_str):
     args = map(float, args.rstrip(')').split(','))
     if name == 'translate':
         return euclid.Matrix3.new_translate(*args)
+    elif name == 'matrix':
+        transform = euclid.Matrix3()
+        transform[0:2] = args[0:2]
+        transform[3:5] = args[2:4]
+        transform[6:8] = args[4:6]
+        return transform
     else:
-        print 'parse_transform(): unsupported SVG transform: ' + transform_str
+        log('parse_transform(): unsupported SVG transform: ' + transform_str)
         return euclid.Matrix3.new_identity()
 
 def parse_element(element, transform, level):
@@ -124,7 +171,7 @@ def parse_element(element, transform, level):
     elif element.nodeName == 'rect':
         parse_rect_element(element, transform, level)
     else:
-        print 'parse_element(): unsupported SVG element: ' + str(element)
+        log('parse_element(): unsupported SVG element: ' + str(element))
 
 def parse_element_data(element):
     for child_node in element.childNodes:
@@ -145,44 +192,28 @@ def parse_path_element(element, transform, level):
         level.goal = transform * euclid.Point2(x, y)
 
 def parse_rect_element(element, transform, level):
-    print 'parse_rect_element(): not implemented'
+    x = float(element.getAttribute('x'))
+    y = float(element.getAttribute('y'))
+    width = float(element.getAttribute('width'))
+    height = float(element.getAttribute('height'))
+    vertices = [euclid.Point2(x, y),
+                euclid.Point2(x, y + height),
+                euclid.Point2(x + width, y + height),
+                euclid.Point2(x + width, y)]
+    vertices = [tuple(transform * v) for v in vertices]
+    shape_def = b2PolygonDef()
+    shape_def.vertices = vertices
+    BodyActor(level.world, shape_def)
 
 class GameScreen(Screen):
     def __init__(self, window):
         super(GameScreen, self).__init__(window)
-        self.init_world()
-        self.init_level()
-        self.vehicle = Vehicle(self.world, (0, 0))
         self.clock_display = pyglet.clock.ClockDisplay()
-        self.throttle = 0
-        self.spin = 0
         self.time = 0
         self.world_time = 0
         self.level = load_level('lib/ride/levels/basement.svg')
+        self.level.vehicle = Vehicle(self.level.world, self.level.start)
         pyglet.clock.schedule_interval(self.step, config.dt)
-
-    def init_world(self):
-        aabb = b2AABB()
-        aabb.lowerBound = -100, -100
-        aabb.upperBound = 100, 100
-        self.world = b2World(aabb, config.gravity, True)
-
-    def init_level(self):
-        BodyActor(self.world, shape_def=create_box_def(5, 0.1),
-                  position=(0, -2), angle=-0.3)
-        BodyActor(self.world, shape_def=create_box_def(5, 0.1),
-                  position=(7, -3))
-        BodyActor(self.world, shape_def=create_box_def(5, 0.1),
-                  position=(14, -1), angle=0.5)
-
-        BodyActor(self.world, shape_def=create_box_def(5, 0.1),
-                  position=(32, 2), angle=0.1)
-        BodyActor(self.world, shape_def=create_box_def(10, 0.1),
-                  position=(36, -6), angle=-0.2)
-        BodyActor(self.world, shape_def=create_box_def(5, 0.1),
-                  position=(21, -7), angle=-1)
-        BodyActor(self.world, shape_def=create_box_def(5, 0.1),
-                  position=(26, -12), angle=-0.5)
 
     def delete(self):
         pyglet.clock.unschedule(self.step)
@@ -192,23 +223,7 @@ class GameScreen(Screen):
         self.time += dt
         while self.world_time + config.dt <= self.time:
             self.world_time += config.dt
-
-            for spring in self.vehicle.springs:
-                spring.step(config.dt)
-
-            if self.throttle:
-                motor_torque = (-config.motor_torque -
-                                config.motor_damping *
-                                self.vehicle.back_wheel.body.angularVelocity)
-                self.vehicle.back_wheel.body.ApplyTorque(motor_torque)
-                self.vehicle.front_wheel.body.ApplyTorque(motor_torque)
-
-            spin_torque = (self.spin * config.spin_torque -
-                           config.spin_damping *
-                           self.vehicle.frame.body.angularVelocity)
-            self.vehicle.frame.body.ApplyTorque(spin_torque)
-
-            self.world.Step(config.dt, 10, 10)
+            self.level.step(config.dt)
 
     def on_draw(self):
         self.window.clear()
@@ -216,49 +231,32 @@ class GameScreen(Screen):
         glTranslatef(self.window.width // 2, self.window.height // 2, 0)
         scale = self.window.height / config.camera_height
         glScalef(scale, scale, scale)
-        camera_position = self.vehicle.frame.body.position
+        camera_position = self.level.vehicle.frame.body.position
         glTranslatef(-camera_position.x, -camera_position.y, 0)
-        self.debug_draw()
+        self.level.debug_draw()
         glPopMatrix()
         if config.fps:
             self.clock_display.draw()
         return pyglet.event.EVENT_HANDLED
 
-    def debug_draw(self):
-        for body in self.world.bodyList:
-            actor = body.userData
-            if actor is not None:
-                actor.debug_draw()
-        for joint in self.world.jointList:
-            if isinstance(joint, b2DistanceJoint):
-                glBegin(GL_LINES)
-                glVertex2f(*joint.GetAnchor1().tuple())
-                glVertex2f(*joint.GetAnchor2().tuple())
-                glEnd()
-        for spring in self.vehicle.springs:
-            glBegin(GL_LINES)
-            glVertex2f(*spring.anchor_1.tuple())
-            glVertex2f(*spring.anchor_2.tuple())
-            glEnd()
-
     def on_key_press(self, symbol, modifiers):
         if symbol == pyglet.window.key.ESCAPE:
             self.delete()
         if symbol == pyglet.window.key.SPACE:
-            self.throttle = 1
+            self.level.throttle = 1
         if symbol == pyglet.window.key.LEFT:
-            self.spin += 1
+            self.level.spin += 1
         if symbol == pyglet.window.key.RIGHT:
-            self.spin -= 1
+            self.level.spin -= 1
         return pyglet.event.EVENT_HANDLED
 
     def on_key_release(self, symbol, modifiers):
         if symbol == pyglet.window.key.SPACE:
-            self.throttle = 0
+            self.level.throttle = 0
         if symbol == pyglet.window.key.LEFT:
-            self.spin -= 1
+            self.level.spin -= 1
         if symbol == pyglet.window.key.RIGHT:
-            self.spin += 1
+            self.level.spin += 1
         return pyglet.event.EVENT_HANDLED
 
 class Actor(object):
@@ -376,9 +374,9 @@ class Vehicle(object):
         self.world = world
         self.group_index = -1
         self.springs = []
-        self.init_frame()
-        self.init_back_wheel()
-        self.init_front_wheel()
+        self.init_frame(position)
+        self.init_back_wheel(position)
+        self.init_front_wheel(position)
         self.init_back_spring()
         self.init_front_spring()
 
@@ -387,29 +385,32 @@ class Vehicle(object):
         self.back_wheel.delete()
         self.front_wheel.delete()
 
-    def init_frame(self):
+    def init_frame(self, position):
+        x, y = position
         shape_def = create_box_def(0.75, 0.5, density=1,
                                    group_index=self.group_index)
         self.frame = BodyActor(self.world, shape_def=shape_def,
-                               position=(0, config.wheel_radius + 0.5))
+                               position=(x, y + config.wheel_radius + 0.5))
 
-    def init_back_wheel(self):
+    def init_back_wheel(self, position):
+        x, y = position
         shape_def = create_circle_def(radius=config.wheel_radius,
                                       density=config.wheel_density,
                                       friction=config.wheel_friction,
                                       group_index=self.group_index)
         self.back_wheel = BodyActor(self.world, shape_def=shape_def,
-                                    position=(config.wheel_distance / -2,
-                                              config.wheel_radius))
+                                    position=(x + config.wheel_distance / -2,
+                                              y + config.wheel_radius))
 
-    def init_front_wheel(self):
+    def init_front_wheel(self, position):
+        x, y = position
         shape_def = create_circle_def(radius=config.wheel_radius,
                                       density=config.wheel_density,
                                       friction=config.wheel_friction,
                                       group_index=self.group_index)
         self.front_wheel = BodyActor(self.world, shape_def=shape_def,
-                                     position=(config.wheel_distance / 2,
-                                               config.wheel_radius))
+                                     position=(x + config.wheel_distance / 2,
+                                               y + config.wheel_radius))
 
     def init_back_spring(self):
         frame_anchor = (self.back_wheel.body.position +
