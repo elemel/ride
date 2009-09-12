@@ -1,0 +1,10 @@
+Module Stack
+
+Let's try to avoid circular module dependencies. Higher modules use lower
+modules. Lower modules don't know about higher modules.
+
+- main
+- gui
+- svg
+- game
+- util
