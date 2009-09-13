@@ -15,6 +15,7 @@ class Level(object):
         self.vehicle = None
         self.throttle = 0
         self.spin = 0
+        self.springs = []
 
     def init_world(self, lower_bound, upper_bound):
         aabb = b2.b2AABB()
@@ -24,9 +25,6 @@ class Level(object):
 
     def step(self, dt):
         """
-        for spring in self.vehicle.springs:
-            spring.step(dt)
-
         if self.throttle:
             motor_torque = (-config.motor_torque -
                             config.motor_damping *
@@ -39,6 +37,8 @@ class Level(object):
         self.vehicle.frame.body.ApplyTorque(spin_torque)
         """
 
+        for spring in self.springs:
+            spring.step(dt)
         self.world.Step(dt, 10, 10)
 
     def debug_draw(self):
@@ -59,6 +59,9 @@ class Level(object):
             glVertex2f(*spring.anchor_2.tuple())
             glEnd()
         """
+
+    def add_spring(self, spring):
+        self.springs.append(spring)
 
 class Actor(object):
     def __init__(self):

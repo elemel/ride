@@ -119,10 +119,10 @@
     <rect
        style="fill:#00000d;fill-opacity:0.04705882;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2840"
-       width="392"
+       width="410"
        height="240.78679"
-       x="328"
-       y="681.57538">
+       x="320"
+       y="691.57538">
       <desc
          id="desc2833">density: 1;</desc>
     </rect>
@@ -152,19 +152,25 @@
     </path>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-opacity:1"
-       d="M 719.0215,922.13773 L 625.16767,680.65141"
+       d="M 719.02149,922.13773 L 589.16766,702.65141"
        id="path2848-2-6"
        sodipodi:nodetypes="cc">
       <desc
-         id="desc3622-1-7">type: spring;</desc>
+         id="desc3622-1-7">type: spring;
+spring-constant: 150;
+damping: 10;
+max-force: 100;</desc>
     </path>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-opacity:1"
-       d="M 328.18282,922.13774 L 422.03665,680.65142"
+       d="M 328.18281,922.13774 L 454.03664,704.65142"
        id="path2848-2-6-2"
        sodipodi:nodetypes="cc">
       <desc
-         id="desc3622-1-7-7">type: spring;</desc>
+         id="desc3622-1-7-7">type: spring;
+spring-constant: 150;
+damping: 10;
+max-force: 100;</desc>
     </path>
   </g>
 </svg>
