@@ -37,7 +37,7 @@ class GameScreen(Screen):
         self.time = 0
         self.world_time = 0
         self.level = svg.load_level('lib/ride/levels/basement.svg')
-        self.level.vehicle = Vehicle(self.level.world, self.level.start)
+        svg.load_vehicle('lib/ride/vehicles/buggy.svg', self.level)
         pyglet.clock.schedule_interval(self.step, config.dt)
 
     def delete(self):
@@ -56,7 +56,10 @@ class GameScreen(Screen):
         glTranslatef(self.window.width // 2, self.window.height // 2, 0)
         scale = self.window.height / config.camera_height
         glScalef(scale, scale, scale)
-        camera_position = self.level.vehicle.frame.body.position
+        if self.level.vehicle is None:
+            camera_position = self.level.start
+        else:
+            camera_position = self.level.vehicle.frame.body.position
         glTranslatef(-camera_position.x, -camera_position.y, 0)
         self.level.debug_draw()
         glPopMatrix()

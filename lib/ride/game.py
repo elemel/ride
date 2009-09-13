@@ -23,6 +23,7 @@ class Level(object):
         self.world = b2.b2World(aabb, config.gravity, True)
 
     def step(self, dt):
+        """
         for spring in self.vehicle.springs:
             spring.step(dt)
 
@@ -36,6 +37,7 @@ class Level(object):
                        config.spin_damping *
                        self.vehicle.frame.body.angularVelocity)
         self.vehicle.frame.body.ApplyTorque(spin_torque)
+        """
 
         self.world.Step(dt, 10, 10)
 
@@ -50,11 +52,13 @@ class Level(object):
                 glVertex2f(*joint.GetAnchor1().tuple())
                 glVertex2f(*joint.GetAnchor2().tuple())
                 glEnd()
+        """
         for spring in self.vehicle.springs:
             glBegin(GL_LINES)
             glVertex2f(*spring.anchor_1.tuple())
             glVertex2f(*spring.anchor_2.tuple())
             glEnd()
+        """
 
 class Actor(object):
     def __init__(self):
@@ -86,7 +90,7 @@ class BodyActor(Actor):
         super(BodyActor, self).__init__()
         self.world = world
         body_def = b2.b2BodyDef()
-        body_def.position = position
+        body_def.position = tuple(position)
         body_def.angle = angle
         self.body = self.world.CreateBody(body_def)
         self.body.userData = self
