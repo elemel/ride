@@ -4,6 +4,7 @@ import b2
 import config
 from util import *
 
+from collections import defaultdict
 import math
 from pyglet.gl import *
 
@@ -16,6 +17,7 @@ class Level(object):
         self.throttle = 0
         self.spin = 0
         self.springs = []
+        self.labels = defaultdict(list)
 
     def init_world(self, lower_bound, upper_bound):
         aabb = b2.b2AABB()
@@ -24,18 +26,17 @@ class Level(object):
         self.world = b2.b2World(aabb, config.gravity, True)
 
     def step(self, dt):
-        """
+        frame = self.labels['frame'][0]
+        back_wheel = self.labels['back-wheel'][0]
         if self.throttle:
             motor_torque = (-config.motor_torque -
                             config.motor_damping *
-                            self.vehicle.back_wheel.body.angularVelocity)
-            self.vehicle.back_wheel.body.ApplyTorque(motor_torque)
+                            back_wheel.body.angularVelocity)
+            back_wheel.body.ApplyTorque(motor_torque)
 
         spin_torque = (self.spin * config.spin_torque -
-                       config.spin_damping *
-                       self.vehicle.frame.body.angularVelocity)
-        self.vehicle.frame.body.ApplyTorque(spin_torque)
-        """
+                       config.spin_damping * frame.body.angularVelocity)
+        frame.body.ApplyTorque(spin_torque)
 
         for spring in self.springs:
             spring.step(dt)
@@ -52,13 +53,11 @@ class Level(object):
                 glVertex2f(*joint.GetAnchor1().tuple())
                 glVertex2f(*joint.GetAnchor2().tuple())
                 glEnd()
-        """
-        for spring in self.vehicle.springs:
+        for spring in self.springs:
             glBegin(GL_LINES)
             glVertex2f(*spring.anchor_1.tuple())
             glVertex2f(*spring.anchor_2.tuple())
             glEnd()
-        """
 
     def add_spring(self, spring):
         self.springs.append(spring)
@@ -88,14 +87,15 @@ class Actor(object):
         raise NotImplementedError()
 
 class BodyActor(Actor):
-    def __init__(self, world, shape_def, position=(0, 0), angle=0,
-                 linear_velocity=(0, 0), angular_velocity=0):
+    def __init__(self, level, shape_def, position=(0, 0), angle=0,
+                 linear_velocity=(0, 0), angular_velocity=0, label=None):
         super(BodyActor, self).__init__()
-        self.world = world
+        self.level = level
+        self.level.labels[label].append(self)
         body_def = b2.b2BodyDef()
         body_def.position = tuple(position)
         body_def.angle = angle
-        self.body = self.world.CreateBody(body_def)
+        self.body = self.level.world.CreateBody(body_def)
         self.body.userData = self
         self.body.CreateShape(shape_def)
         self.body.SetMassFromShapes()

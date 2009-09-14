@@ -56,10 +56,11 @@ class GameScreen(Screen):
         glTranslatef(self.window.width // 2, self.window.height // 2, 0)
         scale = self.window.height / config.camera_height
         glScalef(scale, scale, scale)
-        if self.level.vehicle is None:
-            camera_position = self.level.start
+        frames = self.level.labels['frame']
+        if frames:
+            camera_position = frames[0].body.GetWorldCenter()
         else:
-            camera_position = self.level.vehicle.frame.body.position
+            camera_position = self.level.start
         glTranslatef(-camera_position.x, -camera_position.y, 0)
         self.level.debug_draw()
         glPopMatrix()

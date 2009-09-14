@@ -4,7 +4,7 @@ fullscreen = True
 fps = True
 debug_circle_vertex_count = 100
 
-camera_height = 10
+camera_height = 15
 
 gravity = 0, -10
 dt = 1 / 60

@@ -159,6 +159,7 @@ def parse_path_element(element, transform, state):
         parse_spring_element(element, transform, state, element_data)
 
 def parse_circle_element(element, transform, state):
+    label = element.getAttribute('inkscape:label')
     element_data = parse_element_data(element)
     cx = float(element.getAttribute('sodipodi:cx'))
     cy = float(element.getAttribute('sodipodi:cy'))
@@ -168,9 +169,12 @@ def parse_circle_element(element, transform, state):
     shape_def = b2.b2CircleDef()
     shape_def.radius = abs(transform * euclid.Vector2((rx + ry) / 2, 0))
     shape_def.density = float(element_data.get('density', '0'))
-    BodyActor(state.level.world, shape_def, position=position)
+    shape_def.friction = float(element_data.get('friction', '0.5'))
+    shape_def.restitution = float(element_data.get('restitution', '0.5'))
+    BodyActor(state.level, shape_def, position=position, label=label)
 
 def parse_rect_element(element, transform, state):
+    label = element.getAttribute('inkscape:label')
     element_data = parse_element_data(element)
     x = float(element.getAttribute('x'))
     y = float(element.getAttribute('y'))
@@ -184,4 +188,6 @@ def parse_rect_element(element, transform, state):
     shape_def = b2.b2PolygonDef()
     shape_def.vertices = vertices
     shape_def.density = float(element_data.get('density', '0'))
-    BodyActor(state.level.world, shape_def)
+    shape_def.friction = float(element_data.get('friction', '0.5'))
+    shape_def.restitution = float(element_data.get('restitution', '0.5'))
+    BodyActor(state.level, shape_def, label=label)
