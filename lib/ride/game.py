@@ -9,8 +9,8 @@ import math
 from pyglet.gl import *
 
 class Level(object):
-    def __init__(self, lower_bound, upper_bound):
-        self.init_world(lower_bound, upper_bound)
+    def __init__(self, lower_bound, upper_bound, gravity):
+        self.init_world(lower_bound, upper_bound, gravity)
         self.start = None
         self.goal = None
         self.vehicle = None
@@ -19,24 +19,25 @@ class Level(object):
         self.springs = []
         self.labels = defaultdict(list)
 
-    def init_world(self, lower_bound, upper_bound):
+    def init_world(self, lower_bound, upper_bound, gravity):
         aabb = b2.b2AABB()
         aabb.lowerBound = lower_bound
         aabb.upperBound = upper_bound
-        self.world = b2.b2World(aabb, config.gravity, True)
+        self.world = b2.b2World(aabb, gravity, True)
 
     def step(self, dt):
-        frame = self.labels['frame'][0]
-        back_wheel = self.labels['back-wheel'][0]
         if self.throttle:
-            motor_torque = (-config.motor_torque -
-                            config.motor_damping *
+            back_wheel = self.labels['back-wheel'][0]
+            motor_torque = (-back_wheel.motor_torque -
+                            back_wheel.motor_damping *
                             back_wheel.body.angularVelocity)
             back_wheel.body.ApplyTorque(motor_torque)
 
-        spin_torque = (self.spin * config.spin_torque -
-                       config.spin_damping * frame.body.angularVelocity)
-        frame.body.ApplyTorque(spin_torque)
+        if self.spin:
+            frame = self.labels['frame'][0]
+            spin_torque = (self.spin * frame.motor_torque -
+                           frame.motor_damping * frame.body.angularVelocity)
+            frame.body.ApplyTorque(spin_torque)
 
         for spring in self.springs:
             spring.step(dt)
@@ -88,7 +89,8 @@ class Actor(object):
 
 class BodyActor(Actor):
     def __init__(self, level, shape_def, position=(0, 0), angle=0,
-                 linear_velocity=(0, 0), angular_velocity=0, label=None):
+                 linear_velocity=(0, 0), angular_velocity=0, label=None,
+                 motor_torque=0, motor_damping=0):
         super(BodyActor, self).__init__()
         self.level = level
         self.level.labels[label].append(self)
@@ -101,6 +103,8 @@ class BodyActor(Actor):
         self.body.SetMassFromShapes()
         self.body.linearVelocity = linear_velocity
         self.body.angularVelocity = angular_velocity
+        self.motor_torque = motor_torque
+        self.motor_damping = motor_damping
 
     def delete(self):
         self.world.DestroyBody(self.body)

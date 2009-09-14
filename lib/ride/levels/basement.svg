@@ -123,7 +123,10 @@
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
         <dc:title></dc:title>
-        <dc:description>width: 100;</dc:description>
+        <dc:description>width: 100;
+gravity: 10;</dc:description>
+        <cc:license
+           rdf:resource="" />
       </cc:Work>
     </rdf:RDF>
   </metadata>

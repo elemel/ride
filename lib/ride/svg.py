@@ -19,10 +19,12 @@ def load_level(path):
     height = float(svg_element.getAttribute('height'))
     description_element = document.getElementsByTagName('dc:description')[0]
     description = description_element.childNodes[0].nodeValue
-    world_width = float(parse_style(description)['width'])
+    description_data = parse_style(description)
+    world_width = float(description_data['width'])
+    gravity = 0, -float(description_data.get('gravity', '10'))
     scale = world_width / width
     world_height = height * scale
-    level = Level((0, 0), (width, height))
+    level = Level((0, 0), (width, height), gravity)
     state = State(level)
     transform = (euclid.Matrix3.new_scale(scale, -scale) *
                  euclid.Matrix3.new_translate(0, -height))
@@ -171,7 +173,10 @@ def parse_circle_element(element, transform, state):
     shape_def.density = float(element_data.get('density', '0'))
     shape_def.friction = float(element_data.get('friction', '0.5'))
     shape_def.restitution = float(element_data.get('restitution', '0.5'))
-    BodyActor(state.level, shape_def, position=position, label=label)
+    motor_torque = float(element_data.get('motor-torque', '0'))
+    motor_damping = float(element_data.get('motor-damping', '0'))
+    BodyActor(state.level, shape_def, position=position, label=label,
+              motor_torque=motor_torque, motor_damping=motor_damping)
 
 def parse_rect_element(element, transform, state):
     label = element.getAttribute('inkscape:label')
@@ -190,4 +195,7 @@ def parse_rect_element(element, transform, state):
     shape_def.density = float(element_data.get('density', '0'))
     shape_def.friction = float(element_data.get('friction', '0.5'))
     shape_def.restitution = float(element_data.get('restitution', '0.5'))
-    BodyActor(state.level, shape_def, label=label)
+    motor_torque = float(element_data.get('motor-torque', '0'))
+    motor_damping = float(element_data.get('motor-damping', '0'))
+    BodyActor(state.level, shape_def, label=label, motor_torque=motor_torque,
+              motor_damping=motor_damping)
