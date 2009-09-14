@@ -118,7 +118,7 @@ def parse_element(element, transform, state):
             parse_path_element(element, transform, state)
     elif element.nodeName == 'rect':
         parse_rect_element(element, transform, state)
-    else:
+    elif element.nodeName not in ('sodipodi:namedview', 'defs', 'metadata'):
         log('parse_element(): unsupported SVG element: ' + str(element))
 
 def parse_element_data(element):
