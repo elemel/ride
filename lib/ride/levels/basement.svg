@@ -95,6 +95,20 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2998"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3020"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      inkscape:document-units="px"
@@ -105,7 +119,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.70710678"
      inkscape:cx="456.67474"
-     inkscape:cy="269.07754"
+     inkscape:cy="381.40812"
      inkscape:current-layer="layer1"
      id="namedview2820"
      showgrid="false"
@@ -150,7 +164,7 @@ gravity: 10;</dc:description>
        inkscape:rounded="-0.080676994"
        inkscape:randomized="0"
        d="M 228.0274,288.0397 C 229.13799,287.17591 210.92766,280.47981 212.33388,280.43378 C 213.74009,280.38774 196.00669,288.2605 197.1714,289.04981 C 198.33611,289.83912 199.07717,270.45086 199.5555,271.77403 C 200.03382,273.09719 187.06646,258.66454 186.6757,260.01615 C 186.28494,261.36777 204.95327,256.08126 203.84268,256.94505 C 202.73208,257.80885 212.45121,241.01622 211.045,241.06226 C 209.63878,241.10829 220.43539,257.22931 219.27068,256.44 C 218.10597,255.65069 237.08008,259.70492 236.60176,258.38176 C 236.12343,257.0586 224.12776,272.30844 224.51853,270.95683 C 224.90929,269.60521 226.91681,288.9035 228.0274,288.0397 z"
-       transform="matrix(0.8332749,0,0,0.83295587,-66.29111,172.69448)">
+       transform="matrix(0.8332749,0,0,0.83295587,-67.705324,154.3097)">
       <desc
          id="desc2852">type: start;</desc>
     </path>
@@ -169,7 +183,7 @@ gravity: 10;</dc:description>
        inkscape:rounded="-0.080676994"
        inkscape:randomized="0"
        d="M 833.79715,368.65544 C 834.66094,367.54484 815.36266,365.53733 816.71427,365.14656 C 818.06589,364.7558 802.81604,376.75147 804.13921,377.22979 C 805.46237,377.70812 801.40814,358.734 802.19744,359.89871 C 802.98675,361.06342 786.86574,350.26682 786.8197,351.67303 C 786.77367,353.07925 803.5663,343.36012 802.7025,344.47071 C 801.83871,345.58131 807.12522,326.91297 805.7736,327.30374 C 804.42199,327.6945 818.85464,340.66186 817.53147,340.18354 C 816.20831,339.70521 835.59657,338.96415 834.80726,337.79944 C 834.01795,336.63473 826.14519,354.36813 826.19122,352.96191 C 826.23726,351.5557 832.93335,369.76603 833.79715,368.65544 z"
-       transform="matrix(0.8332749,0,0,0.83295587,247.29262,84.27296)">
+       transform="matrix(0.8332749,0,0,0.83295587,260.02055,130.69937)">
       <desc
          id="desc2854">type: goal;</desc>
     </path>
@@ -250,9 +264,9 @@ gravity: 10;</dc:description>
        id="rect2864-3-5"
        width="53.887066"
        height="2.7089238"
-       x="509.15396"
-       y="-660.7486"
-       transform="matrix(0.14685433,0.98915813,-0.98894108,0.14830894,0,0)" />
+       x="641.98517"
+       y="-517.08356"
+       transform="matrix(0.36672085,0.93033103,-0.92979068,0.36808871,0,0)" />
     <rect
        style="fill:none;stroke:#000000;stroke-width:1.00000262;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2864-3-8"
@@ -261,5 +275,21 @@ gravity: 10;</dc:description>
        x="399.06171"
        y="614.18445"
        transform="matrix(0.93898572,-0.34395613,0.34700953,0.9378616,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3034"
+       width="115.96552"
+       height="7.0710678"
+       x="52.325901"
+       y="406.09744"
+       transform="translate(0,-1.2188976e-5)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3036"
+       width="212.13203"
+       height="7.0710678"
+       x="782.06012"
+       y="454.18069"
+       transform="translate(0,-1.2188976e-5)" />
   </g>
 </svg>
