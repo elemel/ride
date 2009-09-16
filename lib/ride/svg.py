@@ -1,16 +1,9 @@
 from __future__ import division
 
-import b2
-from game import *
+import models
 
 import euclid
 from xml.dom import minidom
-
-class State(object):
-    def __init__(self, level):
-        self.level = level
-        self.distance_joints = []
-        self.springs = []
 
 def load_level(path):
     document = minidom.parse(path)
@@ -21,17 +14,19 @@ def load_level(path):
     description = description_element.childNodes[0].nodeValue
     description_data = parse_style(description)
     world_width = float(description_data['width'])
-    gravity = 0, -float(description_data.get('gravity', '10'))
+    gravity = float(description_data.get('gravity', '10'))
     scale = world_width / width
     world_height = height * scale
-    level = Level((0, 0), (width, height), gravity)
-    state = State(level)
+    level_model = models.LevelModel()
+    level_model.lower_bound = 0, 0
+    level_model.upper_bound = world_width, world_height
+    level_model.gravity = 0, -gravity
     transform = (euclid.Matrix3.new_scale(scale, -scale) *
                  euclid.Matrix3.new_translate(0, -height))
     for child_node in svg_element.childNodes:
         if child_node.nodeType == minidom.Node.ELEMENT_NODE:
-            parse_element(child_node, transform, state)
-    return level
+            parse_element(child_node, transform, level_model)
+    return level_model
 
 def get_bodies_at_point(world, point):
     segment = b2.b2Segment()
@@ -49,8 +44,7 @@ def get_bodies_at_line_segment(world, line_segment):
         bodies_1.remove(bodies_2[0])
     return bodies_1[0], bodies_2[0]
 
-def load_vehicle(path, level):
-    state = State(level)
+def load_vehicle(path, level_model):
     document = minidom.parse(path)
     svg_element = document.getElementsByTagName('svg')[0]
     width = float(svg_element.getAttribute('width'))
@@ -60,12 +54,14 @@ def load_vehicle(path, level):
     world_width = float(parse_style(description)['width'])
     scale = world_width / width
     world_height = height * scale
-    transform = (euclid.Matrix3.new_translate(*level.start) *
+    transform = (euclid.Matrix3.new_translate(*level_model.start) *
                  euclid.Matrix3.new_scale(scale, -scale) *
                  euclid.Matrix3.new_translate(0, -height))
     for child_node in svg_element.childNodes:
         if child_node.nodeType == minidom.Node.ELEMENT_NODE:
-            parse_element(child_node, transform, state)
+            parse_element(child_node, transform, level_model)
+
+    """
     for line_segment in state.distance_joints:
         bodies = get_bodies_at_line_segment(state.level.world, line_segment)
         joint_def = b2.b2DistanceJointDef()
@@ -83,6 +79,7 @@ def load_vehicle(path, level):
                         damping=damping,
                         max_force=max_force)
         state.level.add_spring(spring)
+    """
 
 def parse_style(style):
     lines = (l.strip() for l in style.split(';'))
@@ -105,21 +102,25 @@ def parse_transform(transform_str):
         log('parse_transform(): unsupported SVG transform: ' + transform_str)
         return euclid.Matrix3.new_identity()
 
-def parse_element(element, transform, state):
+def parse_element(element, transform, level_model):
     transform_str = element.getAttribute('transform')
     if transform_str:
         transform = transform * parse_transform(transform_str)
     if element.nodeName == 'g':
         for child_node in element.childNodes:
             if child_node.nodeType == minidom.Node.ELEMENT_NODE:
-                parse_element(child_node, transform, state)
+                parse_element(child_node, transform, level_model)
     elif element.nodeName == 'path':
         if element.getAttribute('sodipodi:type') == 'arc':
-            parse_circle_element(element, transform, state)
+            body = models.BodyModel()
+            level_model.body_models.add(body)
+            parse_circle_element(element, transform, level_model, body)
         else:
-            parse_path_element(element, transform, state)
+            parse_path_element(element, transform, level_model)
     elif element.nodeName == 'rect':
-        parse_rect_element(element, transform, state)
+        body_model = models.BodyModel()
+        level_model.body_models.add(body_model)
+        parse_rect_element(element, transform, level_model, body_model)
     elif element.nodeName not in ('sodipodi:namedview', 'defs', 'metadata'):
         log('parse_element(): unsupported SVG element: ' + str(element))
 
@@ -137,48 +138,55 @@ def parse_line_segment_element(element, transform):
     points = [euclid.Point2(*map(float, p.split())) for p in points]
     return transform * euclid.LineSegment2(*points)
 
-def parse_distance_joint_element(element, transform, state):
+def parse_distance_joint_element(element, transform, level_model):
     line_segment = parse_line_segment_element(element, transform)
-    state.distance_joints.append(line_segment)
+    distance_joint_model = models.DistanceJointModel()
+    distance_joint_model.anchor_1 = line_segment.p1
+    distance_joint_model.anchor_2 = line_segment.p2
+    level_model.joint_models.add(distance_joint_model)
 
-def parse_spring_element(element, transform, state, element_data):
+def parse_spring_element(element, transform, level_model, element_data):
     line_segment = parse_line_segment_element(element, transform)
-    state.springs.append((line_segment, element_data))
+    spring_model = models.SpringModel()
+    spring_model.anchor_1 = line_segment.p1
+    spring_model.anchor_2 = line_segment.p2
+    spring_model.spring_constant = float(element_data.get('spring-constant', '1'))
+    spring_model.damping_constant = float(element_data.get('damping-constant', '0'))
+    level_model.joint_models.add(spring_model)
 
-def parse_path_element(element, transform, state):
+def parse_path_element(element, transform, level_model):
     element_data = parse_element_data(element)
     if element_data.get('type') == 'start':
         x = float(element.getAttribute('sodipodi:cx'))
         y = float(element.getAttribute('sodipodi:cy'))
-        state.level.start = transform * euclid.Point2(x, y)
+        level_model.start = transform * euclid.Point2(x, y)
     elif element_data.get('type') == 'goal':
         x = float(element.getAttribute('sodipodi:cx'))
         y = float(element.getAttribute('sodipodi:cy'))
-        state.level.goal = transform * euclid.Point2(x, y)
+        level_model.goal = transform * euclid.Point2(x, y)
     elif element_data.get('type') == 'distance-joint':
-        parse_distance_joint_element(element, transform, state)
+        parse_distance_joint_element(element, transform, level_model)
     elif element_data.get('type') == 'spring':
-        parse_spring_element(element, transform, state, element_data)
+        parse_spring_element(element, transform, level_model, element_data)
 
-def parse_circle_element(element, transform, state):
+def parse_circle_element(element, transform, level_model, body_model):
     label = element.getAttribute('inkscape:label')
     element_data = parse_element_data(element)
+
     cx = float(element.getAttribute('sodipodi:cx'))
     cy = float(element.getAttribute('sodipodi:cy'))
     rx = float(element.getAttribute('sodipodi:rx'))
     ry = float(element.getAttribute('sodipodi:ry'))
-    position = transform * euclid.Point2(cx, cy)
-    shape_def = b2.b2CircleDef()
-    shape_def.radius = abs(transform * euclid.Vector2((rx + ry) / 2, 0))
-    shape_def.density = float(element_data.get('density', '0'))
-    shape_def.friction = float(element_data.get('friction', '0.5'))
-    shape_def.restitution = float(element_data.get('restitution', '0.5'))
-    motor_torque = float(element_data.get('motor-torque', '0'))
-    motor_damping = float(element_data.get('motor-damping', '0'))
-    BodyActor(state.level, shape_def, position=position, label=label,
-              motor_torque=motor_torque, motor_damping=motor_damping)
 
-def parse_rect_element(element, transform, state):
+    circle_model = models.CircleModel()
+    circle_model.center = transform * euclid.Point2(cx, cy)
+    circle_model.radius = abs(transform * euclid.Vector2((rx + ry) / 2, 0))
+    circle_model.density = float(element_data.get('density', '0'))
+    circle_model.friction = float(element_data.get('friction', '0.5'))
+    circle_model.restitution = float(element_data.get('restitution', '0.5'))
+    body_model.shape_models.add(circle_model)
+
+def parse_rect_element(element, transform, level_model, body_model):
     label = element.getAttribute('inkscape:label')
     element_data = parse_element_data(element)
     x = float(element.getAttribute('x'))
@@ -189,13 +197,10 @@ def parse_rect_element(element, transform, state):
                 euclid.Point2(x, y + height),
                 euclid.Point2(x + width, y + height),
                 euclid.Point2(x + width, y)]
-    vertices = [tuple(transform * v) for v in vertices]
-    shape_def = b2.b2PolygonDef()
-    shape_def.vertices = vertices
-    shape_def.density = float(element_data.get('density', '0'))
-    shape_def.friction = float(element_data.get('friction', '0.5'))
-    shape_def.restitution = float(element_data.get('restitution', '0.5'))
-    motor_torque = float(element_data.get('motor-torque', '0'))
-    motor_damping = float(element_data.get('motor-damping', '0'))
-    BodyActor(state.level, shape_def, label=label, motor_torque=motor_torque,
-              motor_damping=motor_damping)
+
+    polygon_model = models.PolygonModel()
+    polygon_model.vertices = [tuple(transform * v) for v in vertices]
+    polygon_model.density = float(element_data.get('density', '0'))
+    polygon_model.friction = float(element_data.get('friction', '0.5'))
+    polygon_model.restitution = float(element_data.get('restitution', '0.5'))
+    body_model.shape_models.add(polygon_model)

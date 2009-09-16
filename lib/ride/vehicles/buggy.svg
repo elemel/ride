@@ -188,7 +188,7 @@ motor-damping: 0.5;</desc>
       <desc
          id="desc3622-1-7">type: spring;
 spring-constant: 150;
-damping: 10;
+damping-constant: 10;
 max-force: 100;</desc>
     </path>
     <path
@@ -199,7 +199,7 @@ max-force: 100;</desc>
       <desc
          id="desc3622-1-7-7">type: spring;
 spring-constant: 150;
-damping: 10;
+damping-constant: 10;
 max-force: 100;</desc>
     </path>
   </g>

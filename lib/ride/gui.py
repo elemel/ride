@@ -1,5 +1,6 @@
 from __future__ import division
 
+from actors import *
 from game import *
 import svg
 
@@ -36,8 +37,9 @@ class GameScreen(Screen):
         self.clock_display = pyglet.clock.ClockDisplay()
         self.time = 0
         self.world_time = 0
-        self.level = svg.load_level('lib/ride/levels/basement.svg')
-        svg.load_vehicle('lib/ride/vehicles/buggy.svg', self.level)
+        level_model = svg.load_level('lib/ride/levels/basement.svg')
+        svg.load_vehicle('lib/ride/vehicles/buggy.svg', level_model)
+        self.level_actor = LevelActor(level_model)
         pyglet.clock.schedule_interval(self.step, config.dt)
 
     def delete(self):
@@ -48,7 +50,7 @@ class GameScreen(Screen):
         self.time += dt
         while self.world_time + config.dt <= self.time:
             self.world_time += config.dt
-            self.level.step(config.dt)
+            self.level_actor.step(config.dt)
 
     def on_draw(self):
         self.window.clear()
@@ -56,13 +58,13 @@ class GameScreen(Screen):
         glTranslatef(self.window.width // 2, self.window.height // 2, 0)
         scale = self.window.height / config.camera_height
         glScalef(scale, scale, scale)
-        frames = self.level.labels['frame']
+        frames = []
         if frames:
             camera_position = frames[0].body.GetWorldCenter()
         else:
-            camera_position = self.level.start
+            camera_position = self.level_actor.start
         glTranslatef(-camera_position.x, -camera_position.y, 0)
-        self.level.debug_draw()
+        self.level_actor.debug_draw()
         glPopMatrix()
         if config.fps:
             self.clock_display.draw()
@@ -72,18 +74,18 @@ class GameScreen(Screen):
         if symbol == pyglet.window.key.ESCAPE:
             self.delete()
         if symbol == pyglet.window.key.SPACE:
-            self.level.throttle = 1
+            self.level_actor.throttle = 1
         if symbol == pyglet.window.key.LEFT:
-            self.level.spin += 1
+            self.level_actor.spin += 1
         if symbol == pyglet.window.key.RIGHT:
-            self.level.spin -= 1
+            self.level_actor.spin -= 1
         return pyglet.event.EVENT_HANDLED
 
     def on_key_release(self, symbol, modifiers):
         if symbol == pyglet.window.key.SPACE:
-            self.level.throttle = 0
+            self.level_actor.throttle = 0
         if symbol == pyglet.window.key.LEFT:
-            self.level.spin -= 1
+            self.level_actor.spin -= 1
         if symbol == pyglet.window.key.RIGHT:
-            self.level.spin += 1
+            self.level_actor.spin += 1
         return pyglet.event.EVENT_HANDLED
