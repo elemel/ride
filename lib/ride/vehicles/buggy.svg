@@ -74,6 +74,27 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2847"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2876"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2901"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -84,7 +105,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.70710678"
      inkscape:cx="542.4132"
-     inkscape:cy="231.63401"
+     inkscape:cy="175.06547"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -101,7 +122,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
         <dc:description>width: 5;</dc:description>
       </cc:Work>
     </rdf:RDF>
@@ -119,14 +140,12 @@
        sodipodi:cy="594.09448"
        sodipodi:rx="72"
        sodipodi:ry="72"
-       d="M 346,594.09448 A 72,72 0 1 1 202,594.09448 A 72,72 0 1 1 346,594.09448 z"
+       d="M 346,594.09448 C 346,633.85898 313.7645,666.09448 274,666.09448 C 234.2355,666.09448 202,633.85898 202,594.09448 C 202,554.32998 234.2355,522.09448 274,522.09448 C 313.7645,522.09448 346,554.32998 346,594.09448 z"
        transform="matrix(1.61898,0,0,1.618725,-78.718124,-24.928131)"
        inkscape:label="back-wheel">
       <desc
          id="desc2829">density: 0.5;
-friction: 10;
-motor-torque: 150;
-motor-damping: 5;</desc>
+friction: 10;</desc>
     </path>
     <path
        sodipodi:type="arc"
@@ -136,7 +155,7 @@ motor-damping: 5;</desc>
        sodipodi:cy="594.09448"
        sodipodi:rx="72"
        sodipodi:ry="72"
-       d="M 346,594.09448 A 72,72 0 1 1 202,594.09448 A 72,72 0 1 1 346,594.09448 z"
+       d="M 346,594.09448 C 346,633.85898 313.7645,666.09448 274,666.09448 C 234.2355,666.09448 202,633.85898 202,594.09448 C 202,554.32998 234.2355,522.09448 274,522.09448 C 313.7645,522.09448 346,554.32998 346,594.09448 z"
        transform="matrix(1.6478467,0,0,-1.6475873,261.6024,1914.3158)"
        inkscape:label="front-wheel">
       <desc
@@ -144,12 +163,12 @@ motor-damping: 5;</desc>
 friction: 10;</desc>
     </path>
     <rect
-       style="fill:#00000d;fill-opacity:0.04705882;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#00000d;fill-opacity:0.04705882;stroke:#000000;stroke-width:0.99999994;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2840"
        width="364.93115"
-       height="213.54819"
+       height="192.33498"
        x="357.05142"
-       y="732.58759"
+       y="730.58759"
        inkscape:label="frame">
       <desc
          id="desc2833">density: 1;
@@ -166,15 +185,15 @@ motor-damping: 0.5;</desc>
        id="path2844" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-opacity:1"
-       d="M 540.50528,936.33611 L 365.95851,936.61881"
+       d="M 540.19136,905.52413 L 366.27243,935.87437"
        id="path2848"
        sodipodi:nodetypes="cc">
       <desc
          id="desc3622">type: distance-joint;</desc>
     </path>
     <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-opacity:1"
-       d="M 712.30294,936.66731 L 537.75617,936.95001"
+       style="fill:none;stroke:#000000;stroke-width:0.99999994px;stroke-opacity:1"
+       d="M 712.30294,936.13505 L 537.75617,905.4823"
        id="path2848-2"
        sodipodi:nodetypes="cc">
       <desc
@@ -188,7 +207,7 @@ motor-damping: 0.5;</desc>
       <desc
          id="desc3622-1-7">type: spring;
 spring-constant: 150;
-damping-constant: 10;
+damping: 10;
 max-force: 100;</desc>
     </path>
     <path
@@ -199,8 +218,72 @@ max-force: 100;</desc>
       <desc
          id="desc3622-1-7-7">type: spring;
 spring-constant: 150;
-damping-constant: 10;
+damping: 10;
 max-force: 100;</desc>
+    </path>
+    <path
+       sodipodi:type="star"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path2864"
+       sodipodi:sides="5"
+       sodipodi:cx="176.7767"
+       sodipodi:cy="571.56042"
+       sodipodi:r1="30.066593"
+       sodipodi:r2="15.033296"
+       sodipodi:arg1="0.85196633"
+       sodipodi:arg2="1.4802849"
+       inkscape:flatsided="false"
+       inkscape:rounded="-0.080676994"
+       inkscape:randomized="0"
+       d="M 196.57569,594.18784 C 197.78795,593.12712 176.53131,586.67778 178.13553,586.53218 C 179.73975,586.38659 159.99155,596.5575 161.37497,597.38264 C 162.75839,598.20778 162.32341,575.99856 162.95761,577.47927 C 163.59182,578.95998 147.81618,563.32132 147.45892,564.89201 C 147.10166,566.46271 168.08947,559.18599 166.87721,560.24672 C 165.66495,561.30744 175.66326,541.47131 174.05905,541.61691 C 172.45483,541.7625 185.86099,559.47446 184.47757,558.64932 C 183.09415,557.82417 205.04908,561.20343 204.41488,559.72272 C 203.78068,558.24201 191.07833,576.46533 191.43559,574.89463 C 191.79285,573.32394 195.36343,595.24857 196.57569,594.18784 z"
+       transform="translate(190.91883,364.83624)">
+      <desc
+         id="desc2866">type: motor;
+torque: 150;
+damping: 5;
+clockwise-key: space;</desc>
+    </path>
+    <path
+       sodipodi:type="star"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path2864-3"
+       sodipodi:sides="5"
+       sodipodi:cx="176.7767"
+       sodipodi:cy="571.56042"
+       sodipodi:r1="30.066593"
+       sodipodi:r2="15.033296"
+       sodipodi:arg1="0.85196633"
+       sodipodi:arg2="1.4802849"
+       inkscape:flatsided="false"
+       inkscape:rounded="-0.080676994"
+       inkscape:randomized="0"
+       d="M 196.57569,594.18784 C 197.78795,593.12712 176.53131,586.67778 178.13553,586.53218 C 179.73975,586.38659 159.99155,596.5575 161.37497,597.38264 C 162.75839,598.20778 162.32341,575.99856 162.95761,577.47927 C 163.59182,578.95998 147.81618,563.32132 147.45892,564.89201 C 147.10166,566.46271 168.08947,559.18599 166.87721,560.24672 C 165.66495,561.30744 175.66326,541.47131 174.05905,541.61691 C 172.45483,541.7625 185.86099,559.47446 184.47757,558.64932 C 183.09415,557.82417 205.04908,561.20343 204.41488,559.72272 C 203.78068,558.24201 191.07833,576.46533 191.43559,574.89463 C 191.79285,573.32394 195.36343,595.24857 196.57569,594.18784 z"
+       transform="translate(362.53084,294.96219)">
+      <desc
+         id="desc2866-5">type: motor;
+torque: 5;
+damping: 0.5;
+clockwise-key: right;
+counter-clockwise-key: left;</desc>
+    </path>
+    <path
+       sodipodi:type="star"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path2864-3-4"
+       sodipodi:sides="5"
+       sodipodi:cx="176.7767"
+       sodipodi:cy="571.56042"
+       sodipodi:r1="30.066593"
+       sodipodi:r2="15.033296"
+       sodipodi:arg1="0.85196633"
+       sodipodi:arg2="1.4802849"
+       inkscape:flatsided="false"
+       inkscape:rounded="-0.080676994"
+       inkscape:randomized="0"
+       d="M 196.57569,594.18784 C 197.78795,593.12712 176.53131,586.67778 178.13553,586.53218 C 179.73975,586.38659 159.99155,596.5575 161.37497,597.38264 C 162.75839,598.20778 162.32341,575.99856 162.95761,577.47927 C 163.59182,578.95998 147.81618,563.32132 147.45892,564.89201 C 147.10166,566.46271 168.08947,559.18599 166.87721,560.24672 C 165.66495,561.30744 175.66326,541.47131 174.05905,541.61691 C 172.45483,541.7625 185.86099,559.47446 184.47757,558.64932 C 183.09415,557.82417 205.04908,561.20343 204.41488,559.72272 C 203.78068,558.24201 191.07833,576.46533 191.43559,574.89463 C 191.79285,573.32394 195.36343,595.24857 196.57569,594.18784 z"
+       transform="translate(362.2882,220.49415)">
+      <desc
+         id="desc2866-5-1">type: camera;</desc>
     </path>
   </g>
 </svg>

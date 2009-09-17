@@ -61,26 +61,6 @@ def load_vehicle(path, level_model):
         if child_node.nodeType == minidom.Node.ELEMENT_NODE:
             parse_element(child_node, transform, level_model)
 
-    """
-    for line_segment in state.distance_joints:
-        bodies = get_bodies_at_line_segment(state.level.world, line_segment)
-        joint_def = b2.b2DistanceJointDef()
-        joint_def.Initialize(bodies[0], bodies[1], tuple(line_segment.p1),
-                             tuple(line_segment.p2))
-        state.level.world.CreateJoint(joint_def)
-    for line_segment, element_data in state.springs:
-        bodies = get_bodies_at_line_segment(state.level.world, line_segment)
-        spring_constant = float(element_data.get('spring-constant', '1'))
-        damping = float(element_data.get('damping', '0'))
-        max_force = float(element_data.get('max-force', '1'))
-        spring = Spring(bodies[0], bodies[1], b2.b2Vec2(*line_segment.p1),
-                        b2.b2Vec2(*line_segment.p2),
-                        spring_constant=spring_constant,
-                        damping=damping,
-                        max_force=max_force)
-        state.level.add_spring(spring)
-    """
-
 def parse_style(style):
     lines = (l.strip() for l in style.split(';'))
     pairs = (l.split(':') for l in lines if l)
@@ -113,13 +93,13 @@ def parse_element(element, transform, level_model):
     elif element.nodeName == 'path':
         if element.getAttribute('sodipodi:type') == 'arc':
             body = models.BodyModel()
-            level_model.body_models.add(body)
+            level_model.body_models.append(body)
             parse_circle_element(element, transform, level_model, body)
         else:
             parse_path_element(element, transform, level_model)
     elif element.nodeName == 'rect':
         body_model = models.BodyModel()
-        level_model.body_models.add(body_model)
+        level_model.body_models.append(body_model)
         parse_rect_element(element, transform, level_model, body_model)
     elif element.nodeName not in ('sodipodi:namedview', 'defs', 'metadata'):
         log('parse_element(): unsupported SVG element: ' + str(element))
@@ -143,7 +123,7 @@ def parse_distance_joint_element(element, transform, level_model):
     distance_joint_model = models.DistanceJointModel()
     distance_joint_model.anchor_1 = line_segment.p1
     distance_joint_model.anchor_2 = line_segment.p2
-    level_model.joint_models.add(distance_joint_model)
+    level_model.joint_models.append(distance_joint_model)
 
 def parse_spring_element(element, transform, level_model, element_data):
     line_segment = parse_line_segment_element(element, transform)
@@ -151,8 +131,8 @@ def parse_spring_element(element, transform, level_model, element_data):
     spring_model.anchor_1 = line_segment.p1
     spring_model.anchor_2 = line_segment.p2
     spring_model.spring_constant = float(element_data.get('spring-constant', '1'))
-    spring_model.damping_constant = float(element_data.get('damping-constant', '0'))
-    level_model.joint_models.add(spring_model)
+    spring_model.damping = float(element_data.get('damping', '0'))
+    level_model.joint_models.append(spring_model)
 
 def parse_path_element(element, transform, level_model):
     element_data = parse_element_data(element)
@@ -168,6 +148,22 @@ def parse_path_element(element, transform, level_model):
         parse_distance_joint_element(element, transform, level_model)
     elif element_data.get('type') == 'spring':
         parse_spring_element(element, transform, level_model, element_data)
+    elif element_data.get('type') == 'motor':
+        x = float(element.getAttribute('sodipodi:cx'))
+        y = float(element.getAttribute('sodipodi:cy'))
+        motor_model = models.MotorModel()
+        motor_model.anchor = transform * euclid.Point2(x, y)
+        motor_model.torque = float(element_data.get('torque', '1'))
+        motor_model.damping = float(element_data.get('damping', '0'))
+        motor_model.clockwise_key = element_data.get('clockwise-key')
+        motor_model.counter_clockwise_key = element_data.get('counter-clockwise-key')
+        level_model.joint_models.append(motor_model)
+    elif element_data.get('type') == 'camera':
+        x = float(element.getAttribute('sodipodi:cx'))
+        y = float(element.getAttribute('sodipodi:cy'))
+        camera_model = models.CameraModel()
+        camera_model.anchor = transform * euclid.Point2(x, y)
+        level_model.joint_models.append(camera_model)
 
 def parse_circle_element(element, transform, level_model, body_model):
     label = element.getAttribute('inkscape:label')
@@ -184,7 +180,7 @@ def parse_circle_element(element, transform, level_model, body_model):
     circle_model.density = float(element_data.get('density', '0'))
     circle_model.friction = float(element_data.get('friction', '0.5'))
     circle_model.restitution = float(element_data.get('restitution', '0.5'))
-    body_model.shape_models.add(circle_model)
+    body_model.shape_models.append(circle_model)
 
 def parse_rect_element(element, transform, level_model, body_model):
     label = element.getAttribute('inkscape:label')
@@ -203,4 +199,4 @@ def parse_rect_element(element, transform, level_model, body_model):
     polygon_model.density = float(element_data.get('density', '0'))
     polygon_model.friction = float(element_data.get('friction', '0.5'))
     polygon_model.restitution = float(element_data.get('restitution', '0.5'))
-    body_model.shape_models.add(polygon_model)
+    body_model.shape_models.append(polygon_model)

@@ -8,12 +8,12 @@ class LevelModel(Model):
         self.gravity = 0, -10
         self.start = -50, 0
         self.goal = 50, 0
-        self.body_models = set()
-        self.joint_models = set()
+        self.body_models = []
+        self.joint_models = []
 
 class BodyModel(Model):
     def __init__(self):
-        self.shape_models = set()
+        self.shape_models = []
 
 class ShapeModel(Model):
     def __init__(self, density=0, friction=0.5, restitution=0.5):
@@ -45,19 +45,26 @@ class DistanceJointModel(JointModel):
         self.anchor_2 = anchor_2
 
 class MotorModel(JointModel):
-    def __init__(self, body_model_1=None, body_model_2=None, torque=1,
-                 damping=0):
-        self.body_model_1 = body_model_1
-        self.body_model_2 = body_model_2
+    def __init__(self, body_model=None, anchor=(0, 0), torque=1, damping=0,
+                 clockwise_key=None, counter_clockwise_key=None):
+        self.body_model = body_model
+        self.anchor = anchor
         self.torque = torque
         self.damping = damping
+        self.clockwise_key = clockwise_key
+        self.counter_clockwise_key = counter_clockwise_key
 
 class SpringModel(JointModel):
     def __init__(self, body_model_1=None, body_model_2=None, anchor_1=(0, 0),
-                 anchor_2=(0, 0), spring_constant=1, damping_constant=0):
+                 anchor_2=(0, 0), spring_constant=1, damping=0):
         self.body_model_1 = body_model_1
         self.body_model_2 = body_model_2
         self.anchor_1 = anchor_1
         self.anchor_2 = anchor_2
         self.spring_constant = spring_constant
-        self.damping_constant = damping_constant
+        self.damping = damping
+
+class CameraModel(JointModel):
+    def __init__(self, body_model=None, anchor=(0, 0)):
+        self.body_model = body_model
+        self.anchor = anchor

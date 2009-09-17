@@ -58,12 +58,8 @@ class GameScreen(Screen):
         glTranslatef(self.window.width // 2, self.window.height // 2, 0)
         scale = self.window.height / config.camera_height
         glScalef(scale, scale, scale)
-        frames = []
-        if frames:
-            camera_position = frames[0].body.GetWorldCenter()
-        else:
-            camera_position = self.level_actor.start
-        glTranslatef(-camera_position.x, -camera_position.y, 0)
+        camera_x, camera_y = self.level_actor.camera
+        glTranslatef(-camera_x, -camera_y, 0)
         self.level_actor.debug_draw()
         glPopMatrix()
         if config.fps:
@@ -73,19 +69,10 @@ class GameScreen(Screen):
     def on_key_press(self, symbol, modifiers):
         if symbol == pyglet.window.key.ESCAPE:
             self.delete()
-        if symbol == pyglet.window.key.SPACE:
-            self.level_actor.throttle = 1
-        if symbol == pyglet.window.key.LEFT:
-            self.level_actor.spin += 1
-        if symbol == pyglet.window.key.RIGHT:
-            self.level_actor.spin -= 1
+        else:
+            self.level_actor.on_key_press(symbol, modifiers)
         return pyglet.event.EVENT_HANDLED
 
     def on_key_release(self, symbol, modifiers):
-        if symbol == pyglet.window.key.SPACE:
-            self.level_actor.throttle = 0
-        if symbol == pyglet.window.key.LEFT:
-            self.level_actor.spin -= 1
-        if symbol == pyglet.window.key.RIGHT:
-            self.level_actor.spin += 1
+        self.level_actor.on_key_release(symbol, modifiers)
         return pyglet.event.EVENT_HANDLED

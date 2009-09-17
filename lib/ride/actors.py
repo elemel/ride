@@ -8,7 +8,8 @@ import math
 from pyglet.gl import *
 
 class Actor(object):
-    pass
+    def delete(self):
+        pass
 
 class LevelActor(Actor):
     def __init__(self, level_model):
@@ -19,6 +20,13 @@ class LevelActor(Actor):
         self.start = level_model.start
         self.goal = level_model.goal
         self.extra_joint_actors = []
+        self.key_names = {
+            pyglet.window.key.LEFT: 'left',
+            pyglet.window.key.RIGHT: 'right',
+            pyglet.window.key.SPACE: 'space',
+        }
+        self.key_press_bindings = {}
+        self.key_release_bindings = {}
 
         for body_model in level_model.body_models:
             BodyActor(self, body_model)
@@ -26,6 +34,7 @@ class LevelActor(Actor):
             self.create_joint(joint_model)
 
         self.circle_display_list = CircleDisplayList()
+        self.camera = 0, 0
 
     def get_bodies_at_point(self, point):
         segment = b2.b2Segment()
@@ -54,28 +63,14 @@ class LevelActor(Actor):
             self.world.CreateJoint(joint_def)
         elif isinstance(joint_model, SpringModel):
             SpringActor(self, joint_model)
+        elif isinstance(joint_model, MotorModel):
+            MotorActor(self, joint_model)
+        elif isinstance(joint_model, CameraModel):
+            CameraActor(self, joint_model)
         else:
             assert False
 
     def step(self, dt):
-        """
-        if self.throttle:
-            back_wheel = self.labels['back-wheel'][0]
-            motor_torque = (-back_wheel.motor_torque -
-                            back_wheel.motor_damping *
-                            back_wheel.body.angularVelocity)
-            back_wheel.body.ApplyTorque(motor_torque)
-
-        if self.spin:
-            frame = self.labels['frame'][0]
-            spin_torque = (self.spin * frame.motor_torque -
-                           frame.motor_damping * frame.body.angularVelocity)
-            frame.body.ApplyTorque(spin_torque)
-
-        for spring in self.springs:
-            spring.step(dt)
-        """
-
         for joint_actor in self.extra_joint_actors:
             joint_actor.step(dt)
         self.world.Step(dt, 10, 10)
@@ -89,13 +84,12 @@ class LevelActor(Actor):
                 glVertex2f(*joint.GetAnchor1().tuple())
                 glVertex2f(*joint.GetAnchor2().tuple())
                 glEnd()
-        """
-        for spring in self.springs:
-            glBegin(GL_LINES)
-            glVertex2f(*spring.anchor_1.tuple())
-            glVertex2f(*spring.anchor_2.tuple())
-            glEnd()
-        """
+        for joint_actor in self.extra_joint_actors:
+            if isinstance(joint_actor, SpringActor):
+                glBegin(GL_LINES)
+                glVertex2f(*joint_actor.anchor_1.tuple())
+                glVertex2f(*joint_actor.anchor_2.tuple())
+                glEnd()
 
     def debug_draw_body(self, body):
         glPushMatrix()
@@ -112,6 +106,20 @@ class LevelActor(Actor):
                 self.circle_display_list.draw(shape.localPosition.tuple(),
                                               shape.radius)
         glPopMatrix()
+
+    def on_key_press(self, symbol, modifiers):
+        name = self.key_names.get(symbol)
+        if name is not None:
+            func = self.key_press_bindings.get(name)
+            if func is not None:
+                func()
+
+    def on_key_release(self, symbol, modifiers):
+        name = self.key_names.get(symbol)
+        if name is not None:
+            func = self.key_release_bindings.get(name)
+            if func is not None:
+                func()
 
 class BodyActor(Actor):
     def __init__(self, level_actor, body_model):
@@ -135,7 +143,10 @@ class BodyActor(Actor):
             self.body.CreateShape(shape_def)
         self.body.SetMassFromShapes()
 
-class SpringActor(object):
+class JointActor(Actor):
+    pass
+
+class SpringActor(JointActor):
     def __init__(self, level_actor, spring_model):
         anchor_1 = tuple(spring_model.anchor_1)
         anchor_2 = tuple(spring_model.anchor_2)
@@ -144,10 +155,13 @@ class SpringActor(object):
         self._anchor_1 = self.body_1.GetLocalPoint(anchor_1)
         self._anchor_2 = self.body_2.GetLocalPoint(anchor_2)
         self.spring_constant = spring_model.spring_constant
-        self.damping_constant = spring_model.damping_constant
+        self.damping = spring_model.damping
         self.max_force = 1000 # spring_model.max_force
         self.length = abs(spring_model.anchor_2 - spring_model.anchor_1)
         level_actor.extra_joint_actors.append(self)
+
+    def delete(self):
+        self.level_actor.extra_joint_actors.remove(self)
 
     @property
     def anchor_1(self):
@@ -169,8 +183,7 @@ class SpringActor(object):
                                                                self.anchor_2) -
                              self.get_linear_velocity_in_point(self.body_1,
                                                                self.anchor_1))
-        damping_force = self.damping_constant * b2.b2Dot(relative_velocity,
-                                                         direction)
+        damping_force = self.damping * b2.b2Dot(relative_velocity, direction)
 
         force = spring_force + damping_force
         force = sign(force) * min(abs(force), self.max_force)
@@ -181,3 +194,53 @@ class SpringActor(object):
         offset = point - body.GetWorldCenter()
         return (body.linearVelocity +
                 b2.b2Vec2(-offset.y, offset.x) * body.angularVelocity)
+
+class MotorActor(JointActor):
+    def __init__(self, level_actor, motor_model):
+        self.level_actor = level_actor
+        bodies = self.level_actor.get_bodies_at_point(tuple(motor_model.anchor))
+        assert len(bodies) == 1
+        self.body = bodies[0]
+        self.torque = motor_model.torque
+        self.damping = motor_model.damping
+        self.clockwise_key = motor_model.clockwise_key
+        self.counter_clockwise_key = motor_model.counter_clockwise_key
+        self.throttle = 0
+        self.level_actor.key_press_bindings[self.clockwise_key] = self.decrement_throttle
+        self.level_actor.key_release_bindings[self.clockwise_key] = self.increment_throttle
+        self.level_actor.key_press_bindings[self.counter_clockwise_key] = self.increment_throttle
+        self.level_actor.key_release_bindings[self.counter_clockwise_key] = self.decrement_throttle
+        self.level_actor.extra_joint_actors.append(self)
+
+    def delete(self):
+        self.level_actor.key_press_bindings[self.clockwise_key] = None
+        self.level_actor.key_release_bindings[self.clockwise_key] = None
+        self.level_actor.key_press_bindings[self.counter_clockwise_key] = None
+        self.level_actor.key_release_bindings[self.counter_clockwise_key] = None
+        self.level_actor.extra_joint_actors.remove(self)
+
+    def increment_throttle(self):
+        self.throttle += 1
+
+    def decrement_throttle(self):
+        self.throttle -= 1
+
+    def step(self, dt):
+        if self.throttle:
+            torque = (self.throttle * self.torque -
+                      self.damping * self.body.angularVelocity)
+            self.body.ApplyTorque(torque)
+
+class CameraActor(JointActor):
+    def __init__(self, level_actor, camera_model):
+        self.level_actor = level_actor
+        bodies = self.level_actor.get_bodies_at_point(tuple(camera_model.anchor))
+        assert len(bodies) == 1
+        self.body = bodies[0]
+        self.level_actor.extra_joint_actors.append(self)
+
+    def delete(self):
+        self.level_actor.extra_joint_actors.remove(self)
+
+    def step(self, dt):
+        self.level_actor.camera = self.body.GetWorldCenter().tuple()
