@@ -18,9 +18,14 @@ class Screen(object):
 class TitleScreen(Screen):
     def __init__(self, window):
         super(TitleScreen, self).__init__(window)
+        self.label = pyglet.text.Label('RIDE', font_size=200, italic=True,
+                                       anchor_x='center', anchor_y='center')
 
     def on_draw(self):
         self.window.clear()
+        self.label.x = self.window.width // 2
+        self.label.y = self.window.height // 2
+        self.label.draw()
         return pyglet.event.EVENT_HANDLED
 
     def on_key_press(self, symbol, modifiers):
