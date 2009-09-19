@@ -86,19 +86,25 @@ def parse_element(element, transform, level_model):
     transform_str = element.getAttribute('transform')
     if transform_str:
         transform = transform * parse_transform(transform_str)
-    if element.nodeName == 'g':
+    element_data = parse_element_data(element)
+    if element_data.get('type') == 'revolute-joint':
+        parse_revolute_joint_element(element, transform, level_model,
+                                     element_data)
+    elif element.nodeName == 'g':
         for child_node in element.childNodes:
             if child_node.nodeType == minidom.Node.ELEMENT_NODE:
                 parse_element(child_node, transform, level_model)
     elif element.nodeName == 'path':
         if element.getAttribute('sodipodi:type') == 'arc':
-            body = models.BodyModel()
-            level_model.body_models.append(body)
-            parse_circle_element(element, transform, level_model, body)
+            body_model = models.BodyModel()
+            body_model.id = element.getAttribute('id')
+            level_model.body_models.append(body_model)
+            parse_circle_element(element, transform, level_model, body_model)
         else:
             parse_path_element(element, transform, level_model)
     elif element.nodeName == 'rect':
         body_model = models.BodyModel()
+        body_model.id = element.getAttribute('id')
         level_model.body_models.append(body_model)
         parse_rect_element(element, transform, level_model, body_model)
     elif element.nodeName not in ('sodipodi:namedview', 'defs', 'metadata'):
@@ -118,12 +124,27 @@ def parse_line_segment_element(element, transform):
     points = [euclid.Point2(*map(float, p.split())) for p in points]
     return transform * euclid.LineSegment2(*points)
 
+def parse_revolute_joint_element(element, transform, level_model,
+                                 element_data):
+    x = float(element.getAttribute('sodipodi:cx'))
+    y = float(element.getAttribute('sodipodi:cy'))
+    revolute_joint_model = models.RevoluteJointModel()
+    revolute_joint_model.anchor = transform * euclid.Point2(x, y)
+    level_model.joint_models.append(revolute_joint_model)
+
 def parse_distance_joint_element(element, transform, level_model):
     line_segment = parse_line_segment_element(element, transform)
     distance_joint_model = models.DistanceJointModel()
     distance_joint_model.anchor_1 = line_segment.p1
     distance_joint_model.anchor_2 = line_segment.p2
     level_model.joint_models.append(distance_joint_model)
+
+def parse_prismatic_joint_element(element, transform, level_model):
+    line_segment = parse_line_segment_element(element, transform)
+    prismatic_joint_model = models.PrismaticJointModel()
+    prismatic_joint_model.anchor_1 = line_segment.p1
+    prismatic_joint_model.anchor_2 = line_segment.p2
+    level_model.joint_models.append(prismatic_joint_model)
 
 def parse_spring_element(element, transform, level_model, element_data):
     line_segment = parse_line_segment_element(element, transform)
@@ -146,6 +167,8 @@ def parse_path_element(element, transform, level_model):
         level_model.goal = transform * euclid.Point2(x, y)
     elif element_data.get('type') == 'distance-joint':
         parse_distance_joint_element(element, transform, level_model)
+    elif element_data.get('type') == 'prismatic-joint':
+        parse_prismatic_joint_element(element, transform, level_model)
     elif element_data.get('type') == 'spring':
         parse_spring_element(element, transform, level_model, element_data)
     elif element_data.get('type') == 'motor':
@@ -180,6 +203,7 @@ def parse_circle_element(element, transform, level_model, body_model):
     circle_model.density = float(element_data.get('density', '0'))
     circle_model.friction = float(element_data.get('friction', '0.5'))
     circle_model.restitution = float(element_data.get('restitution', '0.5'))
+    circle_model.group_index = int(element_data.get('group-index', '0'))
     body_model.shape_models.append(circle_model)
 
 def parse_rect_element(element, transform, level_model, body_model):
@@ -199,4 +223,5 @@ def parse_rect_element(element, transform, level_model, body_model):
     polygon_model.density = float(element_data.get('density', '0'))
     polygon_model.friction = float(element_data.get('friction', '0.5'))
     polygon_model.restitution = float(element_data.get('restitution', '0.5'))
+    polygon_model.group_index = int(element_data.get('group-index', '0'))
     body_model.shape_models.append(polygon_model)

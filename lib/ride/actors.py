@@ -8,11 +8,15 @@ import math
 from pyglet.gl import *
 
 class Actor(object):
+    def __init__(self, model):
+        self.id = model.id
+
     def delete(self):
         pass
 
 class LevelActor(Actor):
     def __init__(self, level_model):
+        super(LevelActor, self).__init__(level_model)
         aabb = b2.b2AABB()
         aabb.lowerBound = level_model.lower_bound
         aabb.upperBound = level_model.upper_bound
@@ -27,6 +31,7 @@ class LevelActor(Actor):
         }
         self.key_press_bindings = {}
         self.key_release_bindings = {}
+        self.z = 1
 
         for body_model in level_model.body_models:
             BodyActor(self, body_model)
@@ -43,23 +48,36 @@ class LevelActor(Actor):
         count, shapes = self.world.Raycast(segment, 1000, True, None)
         return list(set(s.GetBody() for s in shapes))
 
-    def get_bodies_at_line_segment(self, p1, p2):
-        bodies_1 = self.get_bodies_at_point(p1)
-        bodies_2 = self.get_bodies_at_point(p2)
-        if len(bodies_1) == 1 and len(bodies_2) == 2:
-            bodies_2.remove(bodies_1[0])
-        if len(bodies_1) == 2 and len(bodies_2) == 1:
-            bodies_1.remove(bodies_2[0])
-        return bodies_1[0], bodies_2[0]
+    def get_top_bodies_at_point(self, point, body_count=2):
+        def key(body):
+            return body.userData.z
+        return sorted(self.get_bodies_at_point(point), key=key)[-body_count:]
+
+    def get_top_body_at_point(self, point):
+        def key(body):
+            return body.userData.z
+        return max(self.get_bodies_at_point(point), key=key)
 
     def create_joint(self, joint_model):
-        if isinstance(joint_model, DistanceJointModel):
-            bodies = self.get_bodies_at_line_segment(joint_model.anchor_1,
-                                                     joint_model.anchor_2)
+        if isinstance(joint_model, RevoluteJointModel):
+            body_1, body_2 = self.get_top_bodies_at_point(joint_model.anchor)
+            joint_def = b2.b2RevoluteJointDef()
+            joint_def.Initialize(body_1, body_2, tuple(joint_model.anchor))
+            self.world.CreateJoint(joint_def)
+        elif isinstance(joint_model, DistanceJointModel):
+            body_1 = self.get_top_body_at_point(joint_model.anchor_1)
+            body_2 = self.get_top_body_at_point(joint_model.anchor_2)
             joint_def = b2.b2DistanceJointDef()
-            joint_def.Initialize(bodies[0], bodies[1],
-                                 tuple(joint_model.anchor_1),
+            joint_def.Initialize(body_1, body_2, tuple(joint_model.anchor_1),
                                  tuple(joint_model.anchor_2))
+            self.world.CreateJoint(joint_def)
+        elif isinstance(joint_model, PrismaticJointModel):
+            body_1 = self.get_top_body_at_point(joint_model.anchor_1)
+            body_2 = self.get_top_body_at_point(joint_model.anchor_2)
+            joint_def = b2.b2PrismaticJointDef()
+            axis = tuple(joint_model.anchor_2 - joint_model.anchor_1)
+            joint_def.Initialize(body_1, body_2, tuple(joint_model.anchor_1),
+                                 axis)
             self.world.CreateJoint(joint_def)
         elif isinstance(joint_model, SpringModel):
             SpringActor(self, joint_model)
@@ -123,6 +141,9 @@ class LevelActor(Actor):
 
 class BodyActor(Actor):
     def __init__(self, level_actor, body_model):
+        super(BodyActor, self).__init__(body_model)
+        self.z = level_actor.z
+        level_actor.z += 1
         body_def = b2.b2BodyDef()
         self.body = level_actor.world.CreateBody(body_def)
         self.body.userData = self
@@ -140,6 +161,7 @@ class BodyActor(Actor):
             shape_def.density = shape_model.density
             shape_def.friction = shape_model.friction
             shape_def.restitution = shape_model.restitution
+            shape_def.filter.groupIndex = shape_model.group_index
             self.body.CreateShape(shape_def)
         self.body.SetMassFromShapes()
 
@@ -148,10 +170,11 @@ class JointActor(Actor):
 
 class SpringActor(JointActor):
     def __init__(self, level_actor, spring_model):
+        super(SpringActor, self).__init__(spring_model)
         anchor_1 = tuple(spring_model.anchor_1)
         anchor_2 = tuple(spring_model.anchor_2)
-        bodies = level_actor.get_bodies_at_line_segment(anchor_1, anchor_2)
-        self.body_1, self.body_2 = bodies
+        self.body_1 = level_actor.get_top_body_at_point(anchor_1)
+        self.body_2 = level_actor.get_top_body_at_point(anchor_2)
         self._anchor_1 = self.body_1.GetLocalPoint(anchor_1)
         self._anchor_2 = self.body_2.GetLocalPoint(anchor_2)
         self.spring_constant = spring_model.spring_constant
@@ -197,10 +220,9 @@ class SpringActor(JointActor):
 
 class MotorActor(JointActor):
     def __init__(self, level_actor, motor_model):
+        super(MotorActor, self).__init__(motor_model)
         self.level_actor = level_actor
-        bodies = self.level_actor.get_bodies_at_point(tuple(motor_model.anchor))
-        assert len(bodies) == 1
-        self.body = bodies[0]
+        self.body = level_actor.get_top_body_at_point(tuple(motor_model.anchor))
         self.torque = motor_model.torque
         self.damping = motor_model.damping
         self.clockwise_key = motor_model.clockwise_key
@@ -233,10 +255,9 @@ class MotorActor(JointActor):
 
 class CameraActor(JointActor):
     def __init__(self, level_actor, camera_model):
+        super(CameraActor, self).__init__(camera_model)
         self.level_actor = level_actor
-        bodies = self.level_actor.get_bodies_at_point(tuple(camera_model.anchor))
-        assert len(bodies) == 1
-        self.body = bodies[0]
+        self.body = level_actor.get_top_body_at_point(tuple(camera_model.anchor))
         self.level_actor.extra_joint_actors.append(self)
 
     def delete(self):
