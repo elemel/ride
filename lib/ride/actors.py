@@ -60,7 +60,12 @@ class LevelActor(Actor):
 
     def create_joint(self, joint_model):
         if isinstance(joint_model, RevoluteJointModel):
-            body_1, body_2 = self.get_top_bodies_at_point(joint_model.anchor)
+            bodies = self.get_top_bodies_at_point(joint_model.anchor)
+            if len(bodies) == 1:
+                body_1 = bodies[0]
+                body_2 = self.world.GetGroundBody()
+            else:
+                body_1, body_2 = bodies
             joint_def = b2.b2RevoluteJointDef()
             joint_def.Initialize(body_1, body_2, tuple(joint_model.anchor))
             self.world.CreateJoint(joint_def)
