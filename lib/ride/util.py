@@ -39,3 +39,8 @@ class CircleDisplayList(object):
             glScalef(radius, radius, 1)
             glCallList(self.display_list)
             glPopMatrix()
+
+def save_screenshot(name='screenshot.png', format='RGB'):
+    image = pyglet.image.get_buffer_manager().get_color_buffer().image_data
+    image.format = format
+    image.save(name)

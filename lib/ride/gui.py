@@ -3,6 +3,7 @@ from __future__ import division
 from actors import *
 from game import *
 import svg
+from util import *
 
 import pyglet
 from pyglet.gl import *
@@ -74,6 +75,8 @@ class GameScreen(Screen):
     def on_key_press(self, symbol, modifiers):
         if symbol == pyglet.window.key.ESCAPE:
             self.delete()
+        elif symbol == pyglet.window.key.F12:
+            save_screenshot('ride-screenshot.png')
         else:
             self.level_actor.on_key_press(symbol, modifiers)
         return pyglet.event.EVENT_HANDLED
