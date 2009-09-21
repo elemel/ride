@@ -17,6 +17,8 @@ class Actor(object):
 class LevelActor(Actor):
     def __init__(self, level_model):
         super(LevelActor, self).__init__(level_model)
+        self.color = 0, 0, 0, 1
+        self.background_color = 1, 1, 1, 1
         aabb = b2.b2AABB()
         aabb.lowerBound = level_model.lower_bound
         aabb.upperBound = level_model.upper_bound

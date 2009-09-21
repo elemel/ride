@@ -1,6 +1,7 @@
 from __future__ import division
 
 import models
+from util import *
 
 import euclid
 from xml.dom import minidom
@@ -78,8 +79,10 @@ def parse_transform(transform_str):
         transform[3:5] = args[2:4]
         transform[6:8] = args[4:6]
         return transform
+    elif name == 'scale':
+        return euclid.Matrix3.new_scale(*args)
     else:
-        log('parse_transform(): unsupported SVG transform: ' + transform_str)
+        log('parse_transform(): unsupported SVG transform: %s' % name)
         return euclid.Matrix3.new_identity()
 
 def parse_element(element, transform, level_model):
@@ -108,7 +111,7 @@ def parse_element(element, transform, level_model):
         level_model.body_models.append(body_model)
         parse_rect_element(element, transform, level_model, body_model)
     elif element.nodeName not in ('sodipodi:namedview', 'defs', 'metadata'):
-        log('parse_element(): unsupported SVG element: ' + str(element))
+        log('parse_element(): unsupported SVG element: %s' % element.nodeName)
 
 def parse_element_data(element):
     for child_node in element.childNodes:

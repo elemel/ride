@@ -20,9 +20,11 @@ class TitleScreen(Screen):
     def __init__(self, window):
         super(TitleScreen, self).__init__(window)
         self.label = pyglet.text.Label('RIDE', font_size=200, italic=True,
-                                       anchor_x='center', anchor_y='center')
+                                       anchor_x='center', anchor_y='center',
+                                       color=(0xee, 0, 0x11, 255))
 
     def on_draw(self):
+        glClearColor(1, 1, 1, 1)
         self.window.clear()
         self.label.x = self.window.width // 2
         self.label.y = self.window.height // 2
@@ -43,7 +45,7 @@ class GameScreen(Screen):
         self.clock_display = pyglet.clock.ClockDisplay()
         self.time = 0
         self.world_time = 0
-        level_model = svg.load_level('lib/ride/levels/bumpy-ride.svg')
+        level_model = svg.load_level('lib/ride/levels/seesaw.svg')
         svg.load_vehicle('lib/ride/vehicles/buggy.svg', level_model)
         self.level_actor = LevelActor(level_model)
         pyglet.clock.schedule_interval(self.step, config.dt)
@@ -59,7 +61,9 @@ class GameScreen(Screen):
             self.level_actor.step(config.dt)
 
     def on_draw(self):
+        glClearColor(*self.level_actor.background_color)
         self.window.clear()
+        glColor4f(*self.level_actor.color)
         glPushMatrix()
         glTranslatef(self.window.width // 2, self.window.height // 2, 0)
         scale = self.window.height / config.camera_height
