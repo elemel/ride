@@ -19,12 +19,12 @@ class BodyModel(Model):
         self.shape_models = []
 
 class ShapeModel(Model):
-    def __init__(self, density=0, friction=0.5, restitution=0.5):
+    def __init__(self, density=0, friction=0.5, restitution=0.5, group_index=0):
         super(ShapeModel, self).__init__()
         self.density = density
         self.friction = friction
         self.restitution = restitution
-        self.group_index = 0
+        self.group_index = group_index
 
 class CircleModel(ShapeModel):
     def __init__(self, center=(0, 0), radius=1, **kwargs):

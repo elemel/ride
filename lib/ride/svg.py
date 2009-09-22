@@ -3,7 +3,8 @@ from __future__ import division
 import models
 from util import *
 
-import euclid
+from euclid import *
+from itertools import *
 from xml.dom import minidom
 
 def load_level(path):
@@ -22,8 +23,8 @@ def load_level(path):
     level_model.lower_bound = 0, 0
     level_model.upper_bound = world_width, world_height
     level_model.gravity = 0, -gravity
-    transform = (euclid.Matrix3.new_scale(scale, -scale) *
-                 euclid.Matrix3.new_translate(0, -height))
+    transform = (Matrix3.new_scale(scale, -scale) *
+                 Matrix3.new_translate(0, -height))
     for child_node in svg_element.childNodes:
         if child_node.nodeType == minidom.Node.ELEMENT_NODE:
             parse_element(child_node, transform, level_model)
@@ -55,9 +56,9 @@ def load_vehicle(path, level_model):
     world_width = float(parse_style(description)['width'])
     scale = world_width / width
     world_height = height * scale
-    transform = (euclid.Matrix3.new_translate(*level_model.start) *
-                 euclid.Matrix3.new_scale(scale, -scale) *
-                 euclid.Matrix3.new_translate(0, -height))
+    transform = (Matrix3.new_translate(*level_model.start) *
+                 Matrix3.new_scale(scale, -scale) *
+                 Matrix3.new_translate(0, -height))
     for child_node in svg_element.childNodes:
         if child_node.nodeType == minidom.Node.ELEMENT_NODE:
             parse_element(child_node, transform, level_model)
@@ -72,18 +73,18 @@ def parse_transform(transform_str):
     name = name.strip()
     args = map(float, args.rstrip(')').split(','))
     if name == 'translate':
-        return euclid.Matrix3.new_translate(*args)
+        return Matrix3.new_translate(*args)
     elif name == 'matrix':
-        transform = euclid.Matrix3()
+        transform = Matrix3()
         transform[0:2] = args[0:2]
         transform[3:5] = args[2:4]
         transform[6:8] = args[4:6]
         return transform
     elif name == 'scale':
-        return euclid.Matrix3.new_scale(*args)
+        return Matrix3.new_scale(*args)
     else:
         log('parse_transform(): unsupported SVG transform: %s' % name)
-        return euclid.Matrix3.new_identity()
+        return Matrix3.new_identity()
 
 def parse_element(element, transform, level_model):
     transform_str = element.getAttribute('transform')
@@ -124,15 +125,22 @@ def parse_line_segment_element(element, transform):
     path = element.getAttribute('d').replace(',', ' ').strip()
     points = path.lstrip('M').split('L')
     assert len(points) == 2
-    points = [euclid.Point2(*map(float, p.split())) for p in points]
-    return transform * euclid.LineSegment2(*points)
+    points = [Point2(*map(float, p.split())) for p in points]
+    return transform * LineSegment2(*points)
+
+def parse_polygon(path):
+    path = path.strip().lstrip('M')
+    closed = path.endswith('z')
+    vertices = [Point2(*map(float, p.replace(',', ' ').split()))
+                for p in path.rstrip('z').split('L')]
+    return vertices, closed
 
 def parse_revolute_joint_element(element, transform, level_model,
                                  element_data):
     x = float(element.getAttribute('sodipodi:cx'))
     y = float(element.getAttribute('sodipodi:cy'))
     revolute_joint_model = models.RevoluteJointModel()
-    revolute_joint_model.anchor = transform * euclid.Point2(x, y)
+    revolute_joint_model.anchor = transform * Point2(x, y)
     level_model.joint_models.append(revolute_joint_model)
 
 def parse_distance_joint_element(element, transform, level_model):
@@ -163,11 +171,11 @@ def parse_path_element(element, transform, level_model):
     if element_data.get('type') == 'start':
         x = float(element.getAttribute('sodipodi:cx'))
         y = float(element.getAttribute('sodipodi:cy'))
-        level_model.start = transform * euclid.Point2(x, y)
+        level_model.start = transform * Point2(x, y)
     elif element_data.get('type') == 'goal':
         x = float(element.getAttribute('sodipodi:cx'))
         y = float(element.getAttribute('sodipodi:cy'))
-        level_model.goal = transform * euclid.Point2(x, y)
+        level_model.goal = transform * Point2(x, y)
     elif element_data.get('type') == 'distance-joint':
         parse_distance_joint_element(element, transform, level_model)
     elif element_data.get('type') == 'prismatic-joint':
@@ -178,7 +186,7 @@ def parse_path_element(element, transform, level_model):
         x = float(element.getAttribute('sodipodi:cx'))
         y = float(element.getAttribute('sodipodi:cy'))
         motor_model = models.MotorModel()
-        motor_model.anchor = transform * euclid.Point2(x, y)
+        motor_model.anchor = transform * Point2(x, y)
         motor_model.torque = float(element_data.get('torque', '1'))
         motor_model.damping = float(element_data.get('damping', '0'))
         motor_model.clockwise_key = element_data.get('clockwise-key')
@@ -188,8 +196,29 @@ def parse_path_element(element, transform, level_model):
         x = float(element.getAttribute('sodipodi:cx'))
         y = float(element.getAttribute('sodipodi:cy'))
         camera_model = models.CameraModel()
-        camera_model.anchor = transform * euclid.Point2(x, y)
+        camera_model.anchor = transform * Point2(x, y)
         level_model.joint_models.append(camera_model)
+    else:
+        vertices, closed = parse_polygon(element.getAttribute('d'))
+        vertices = [transform * v for v in vertices]
+        body_model = models.BodyModel()
+        body_model.id = element.getAttribute('id')
+        radius = 0.2
+        kwargs = dict(density=float(element_data.get('density', '0')),
+                      friction=float(element_data.get('friction', '0.5')),
+                      restitution=float(element_data.get('restitution', '0.5')),
+                      group_index=int(element_data.get('group-index', '0')))
+        for p1, p2 in izip(vertices[:-1], vertices[1:]):
+            polygon_model = models.PolygonModel(**kwargs)
+            v = (p2 - p1).cross()
+            v.normalize()
+            v *= radius
+            polygon_model.vertices = [p1 + v, p2 + v, p2 - v, p1 - v]
+            body_model.shape_models.append(polygon_model)
+            for center in p1, p2:
+                circle_model = models.CircleModel(center=center, radius=radius, **kwargs)
+                body_model.shape_models.append(circle_model)
+        level_model.body_models.append(body_model)
 
 def parse_circle_element(element, transform, level_model, body_model):
     label = element.getAttribute('inkscape:label')
@@ -201,8 +230,8 @@ def parse_circle_element(element, transform, level_model, body_model):
     ry = float(element.getAttribute('sodipodi:ry'))
 
     circle_model = models.CircleModel()
-    circle_model.center = transform * euclid.Point2(cx, cy)
-    circle_model.radius = abs(transform * euclid.Vector2((rx + ry) / 2, 0))
+    circle_model.center = transform * Point2(cx, cy)
+    circle_model.radius = abs(transform * Vector2((rx + ry) / 2, 0))
     circle_model.density = float(element_data.get('density', '0'))
     circle_model.friction = float(element_data.get('friction', '0.5'))
     circle_model.restitution = float(element_data.get('restitution', '0.5'))
@@ -216,10 +245,10 @@ def parse_rect_element(element, transform, level_model, body_model):
     y = float(element.getAttribute('y'))
     width = float(element.getAttribute('width'))
     height = float(element.getAttribute('height'))
-    vertices = [euclid.Point2(x, y),
-                euclid.Point2(x, y + height),
-                euclid.Point2(x + width, y + height),
-                euclid.Point2(x + width, y)]
+    vertices = [Point2(x, y),
+                Point2(x, y + height),
+                Point2(x + width, y + height),
+                Point2(x + width, y)]
 
     polygon_model = models.PolygonModel()
     polygon_model.vertices = [tuple(transform * v) for v in vertices]

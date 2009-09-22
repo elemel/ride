@@ -20,81 +20,11 @@
      id="defs4">
     <inkscape:perspective
        sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_x="0 : 372.04724 : 1"
        inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_z="744.09448 : 526.18109 : 1"
-       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
-       id="perspective10" />
-    <inkscape:perspective
-       id="perspective2826"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective3632"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective3657"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective3703"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective2871"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective2896"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective2921"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective2847"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective2876"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
-    <inkscape:perspective
-       id="perspective2901"
-       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
-       inkscape:vp_z="1 : 0.5 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_x="0 : 0.5 : 1"
-       sodipodi:type="inkscape:persp3d" />
+       inkscape:vp_z="1052.3622 : 372.04724 : 1"
+       inkscape:persp3d-origin="526.18109 : 248.03149 : 1"
+       id="perspective5028" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -103,7 +33,7 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70710678"
+     inkscape:zoom="0.5"
      inkscape:cx="542.4132"
      inkscape:cy="175.06547"
      inkscape:document-units="px"
@@ -140,8 +70,8 @@
        sodipodi:cy="594.09448"
        sodipodi:rx="72"
        sodipodi:ry="72"
-       d="M 346,594.09448 C 346,633.85898 313.7645,666.09448 274,666.09448 C 234.2355,666.09448 202,633.85898 202,594.09448 C 202,554.32998 234.2355,522.09448 274,522.09448 C 313.7645,522.09448 346,554.32998 346,594.09448 z"
-       transform="matrix(1.61898,0,0,1.618725,-78.718124,-24.928131)"
+       d="M 346,594.09448 A 72,72 0 1 1 202,594.09448 A 72,72 0 1 1 346,594.09448 z"
+       transform="matrix(1.61898,0,0,1.618725,-78.718124,-28.928131)"
        inkscape:label="back-wheel">
       <desc
          id="desc2829">density: 0.5;
@@ -155,8 +85,8 @@ friction: 10;</desc>
        sodipodi:cy="594.09448"
        sodipodi:rx="72"
        sodipodi:ry="72"
-       d="M 346,594.09448 C 346,633.85898 313.7645,666.09448 274,666.09448 C 234.2355,666.09448 202,633.85898 202,594.09448 C 202,554.32998 234.2355,522.09448 274,522.09448 C 313.7645,522.09448 346,554.32998 346,594.09448 z"
-       transform="matrix(1.6478467,0,0,-1.6475873,261.6024,1914.3158)"
+       d="M 346,594.09448 A 72,72 0 1 1 202,594.09448 A 72,72 0 1 1 346,594.09448 z"
+       transform="matrix(1.6478467,0,0,-1.6475873,261.6024,1910.3158)"
        inkscape:label="front-wheel">
       <desc
          id="desc2831">density: 0.5;
@@ -168,7 +98,7 @@ friction: 10;</desc>
        width="364.93115"
        height="192.33498"
        x="357.05142"
-       y="730.58759"
+       y="726.58759"
        inkscape:label="frame">
       <desc
          id="desc2833">density: 1;
@@ -176,16 +106,8 @@ motor-torque: 5;
 motor-damping: 0.5;</desc>
     </rect>
     <path
-       style="stroke-width:1px"
-       d="M 367.17601,937.26701 L 530.38702,937.26701"
-       id="path2842" />
-    <path
-       style="stroke-width:1px"
-       d="M 711.33836,939.04076 L 528.61299,937.26701"
-       id="path2844" />
-    <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-opacity:1"
-       d="M 540.19136,905.52413 L 366.27243,935.87437"
+       d="M 540.19136,901.52413 L 366.27243,931.87437"
        id="path2848"
        sodipodi:nodetypes="cc">
       <desc
@@ -193,7 +115,7 @@ motor-damping: 0.5;</desc>
     </path>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.99999994px;stroke-opacity:1"
-       d="M 712.30294,936.13505 L 537.75617,905.4823"
+       d="M 712.30294,932.13505 L 537.75617,901.4823"
        id="path2848-2"
        sodipodi:nodetypes="cc">
       <desc
@@ -201,7 +123,7 @@ motor-damping: 0.5;</desc>
     </path>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-opacity:1"
-       d="M 712.24444,937.06795 L 597.06197,742.41064"
+       d="M 712.24444,933.06795 L 597.06197,738.41064"
        id="path2848-2-6"
        sodipodi:nodetypes="cc">
       <desc
@@ -212,7 +134,7 @@ max-force: 100;</desc>
     </path>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-opacity:1"
-       d="M 365.56414,937.06796 L 477.19854,744.18441"
+       d="M 365.56414,933.06796 L 477.19854,740.18441"
        id="path2848-2-6-2"
        sodipodi:nodetypes="cc">
       <desc
@@ -236,7 +158,7 @@ max-force: 100;</desc>
        inkscape:rounded="-0.080676994"
        inkscape:randomized="0"
        d="M 196.57569,594.18784 C 197.78795,593.12712 176.53131,586.67778 178.13553,586.53218 C 179.73975,586.38659 159.99155,596.5575 161.37497,597.38264 C 162.75839,598.20778 162.32341,575.99856 162.95761,577.47927 C 163.59182,578.95998 147.81618,563.32132 147.45892,564.89201 C 147.10166,566.46271 168.08947,559.18599 166.87721,560.24672 C 165.66495,561.30744 175.66326,541.47131 174.05905,541.61691 C 172.45483,541.7625 185.86099,559.47446 184.47757,558.64932 C 183.09415,557.82417 205.04908,561.20343 204.41488,559.72272 C 203.78068,558.24201 191.07833,576.46533 191.43559,574.89463 C 191.79285,573.32394 195.36343,595.24857 196.57569,594.18784 z"
-       transform="translate(190.91883,364.83624)">
+       transform="translate(190.91883,360.83624)">
       <desc
          id="desc2866">type: motor;
 torque: 150;
@@ -258,7 +180,7 @@ clockwise-key: space;</desc>
        inkscape:rounded="-0.080676994"
        inkscape:randomized="0"
        d="M 196.57569,594.18784 C 197.78795,593.12712 176.53131,586.67778 178.13553,586.53218 C 179.73975,586.38659 159.99155,596.5575 161.37497,597.38264 C 162.75839,598.20778 162.32341,575.99856 162.95761,577.47927 C 163.59182,578.95998 147.81618,563.32132 147.45892,564.89201 C 147.10166,566.46271 168.08947,559.18599 166.87721,560.24672 C 165.66495,561.30744 175.66326,541.47131 174.05905,541.61691 C 172.45483,541.7625 185.86099,559.47446 184.47757,558.64932 C 183.09415,557.82417 205.04908,561.20343 204.41488,559.72272 C 203.78068,558.24201 191.07833,576.46533 191.43559,574.89463 C 191.79285,573.32394 195.36343,595.24857 196.57569,594.18784 z"
-       transform="translate(362.53084,294.96219)">
+       transform="translate(362.53084,290.96219)">
       <desc
          id="desc2866-5">type: motor;
 torque: 5;
@@ -281,7 +203,7 @@ counter-clockwise-key: left;</desc>
        inkscape:rounded="-0.080676994"
        inkscape:randomized="0"
        d="M 196.57569,594.18784 C 197.78795,593.12712 176.53131,586.67778 178.13553,586.53218 C 179.73975,586.38659 159.99155,596.5575 161.37497,597.38264 C 162.75839,598.20778 162.32341,575.99856 162.95761,577.47927 C 163.59182,578.95998 147.81618,563.32132 147.45892,564.89201 C 147.10166,566.46271 168.08947,559.18599 166.87721,560.24672 C 165.66495,561.30744 175.66326,541.47131 174.05905,541.61691 C 172.45483,541.7625 185.86099,559.47446 184.47757,558.64932 C 183.09415,557.82417 205.04908,561.20343 204.41488,559.72272 C 203.78068,558.24201 191.07833,576.46533 191.43559,574.89463 C 191.79285,573.32394 195.36343,595.24857 196.57569,594.18784 z"
-       transform="translate(362.2882,220.49415)">
+       transform="translate(362.2882,216.49415)">
       <desc
          id="desc2866-5-1">type: camera;</desc>
     </path>
