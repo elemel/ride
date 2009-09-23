@@ -1,7 +1,7 @@
 from __future__ import division
 
 from actors import *
-from game import *
+import config
 import svg
 from util import *
 
