@@ -1,9 +1,9 @@
 from __future__ import division
 
 from actors import *
-import config
+import settings
 import svg
-from util import *
+from utils import *
 
 import pyglet
 from pyglet.gl import *
@@ -45,10 +45,10 @@ class GameScreen(Screen):
         self.clock_display = pyglet.clock.ClockDisplay()
         self.time = 0
         self.world_time = 0
-        level_model = svg.load_level('lib/ride/levels/bumpy-ride.svg')
+        level_model = svg.load_level('lib/ride/levels/bumps.svg')
         svg.load_vehicle('lib/ride/vehicles/buggy.svg', level_model)
         self.level_actor = LevelActor(level_model)
-        pyglet.clock.schedule_interval(self.step, config.dt)
+        pyglet.clock.schedule_interval(self.step, settings.dt)
 
     def delete(self):
         pyglet.clock.unschedule(self.step)
@@ -56,9 +56,9 @@ class GameScreen(Screen):
 
     def step(self, dt):
         self.time += dt
-        while self.world_time + config.dt <= self.time:
-            self.world_time += config.dt
-            self.level_actor.step(config.dt)
+        while self.world_time + settings.dt <= self.time:
+            self.world_time += settings.dt
+            self.level_actor.step(settings.dt)
 
     def on_draw(self):
         glClearColor(*self.level_actor.background_color)
@@ -66,16 +66,16 @@ class GameScreen(Screen):
         glColor4f(*self.level_actor.color)
         glPushMatrix()
         glTranslatef(self.window.width // 2, self.window.height // 2, 0)
-        scale = self.window.height / config.camera_height
+        scale = self.window.height / settings.camera_height
         glScalef(scale, scale, scale)
         camera_x, camera_y = self.level_actor.camera
         glTranslatef(-camera_x, -camera_y, 0)
-        if config.debug:
+        if settings.debug:
             self.level_actor.debug_draw()
         else:
             self.level_actor.draw()
         glPopMatrix()
-        if config.fps:
+        if settings.fps:
             self.clock_display.draw()
         return pyglet.event.EVENT_HANDLED
 

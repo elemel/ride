@@ -2,7 +2,7 @@ from __future__ import division
 
 import b2
 from models import *
-from util import *
+from utils import *
 
 import math
 from pyglet.gl import *
@@ -27,6 +27,7 @@ class LevelActor(Actor):
         self.goal = level_model.goal
         self.extra_joint_actors = []
         self.key_names = {
+            pyglet.window.key.DOWN: 'down',
             pyglet.window.key.LEFT: 'left',
             pyglet.window.key.RIGHT: 'right',
             pyglet.window.key.SPACE: 'space',

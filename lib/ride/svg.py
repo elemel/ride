@@ -1,7 +1,7 @@
 from __future__ import division
 
-import models
-from util import *
+from models import *
+from utils import *
 
 from euclid import *
 from itertools import *
@@ -19,7 +19,7 @@ def load_level(path):
     gravity = float(description_data.get('gravity', '10'))
     scale = world_width / width
     world_height = height * scale
-    level_model = models.LevelModel()
+    level_model = LevelModel()
     level_model.lower_bound = 0, 0
     level_model.upper_bound = world_width, world_height
     level_model.gravity = 0, -gravity
@@ -100,14 +100,14 @@ def parse_element(element, transform, level_model):
                 parse_element(child_node, transform, level_model)
     elif element.nodeName == 'path':
         if element.getAttribute('sodipodi:type') == 'arc':
-            body_model = models.BodyModel()
+            body_model = BodyModel()
             body_model.id = element.getAttribute('id')
             level_model.body_models.append(body_model)
             parse_circle_element(element, transform, level_model, body_model)
         else:
             parse_path_element(element, transform, level_model)
     elif element.nodeName == 'rect':
-        body_model = models.BodyModel()
+        body_model = BodyModel()
         body_model.id = element.getAttribute('id')
         level_model.body_models.append(body_model)
         parse_rect_element(element, transform, level_model, body_model)
@@ -139,27 +139,27 @@ def parse_revolute_joint_element(element, transform, level_model,
                                  element_data):
     x = float(element.getAttribute('sodipodi:cx'))
     y = float(element.getAttribute('sodipodi:cy'))
-    revolute_joint_model = models.RevoluteJointModel()
+    revolute_joint_model = RevoluteJointModel()
     revolute_joint_model.anchor = transform * Point2(x, y)
     level_model.joint_models.append(revolute_joint_model)
 
 def parse_distance_joint_element(element, transform, level_model):
     line_segment = parse_line_segment_element(element, transform)
-    distance_joint_model = models.DistanceJointModel()
+    distance_joint_model = DistanceJointModel()
     distance_joint_model.anchor_1 = line_segment.p1
     distance_joint_model.anchor_2 = line_segment.p2
     level_model.joint_models.append(distance_joint_model)
 
 def parse_prismatic_joint_element(element, transform, level_model):
     line_segment = parse_line_segment_element(element, transform)
-    prismatic_joint_model = models.PrismaticJointModel()
+    prismatic_joint_model = PrismaticJointModel()
     prismatic_joint_model.anchor_1 = line_segment.p1
     prismatic_joint_model.anchor_2 = line_segment.p2
     level_model.joint_models.append(prismatic_joint_model)
 
 def parse_spring_element(element, transform, level_model, element_data):
     line_segment = parse_line_segment_element(element, transform)
-    spring_model = models.SpringModel()
+    spring_model = SpringModel()
     spring_model.anchor_1 = line_segment.p1
     spring_model.anchor_2 = line_segment.p2
     spring_model.spring_constant = float(element_data.get('spring-constant', '1'))
@@ -185,7 +185,7 @@ def parse_path_element(element, transform, level_model):
     elif element_data.get('type') == 'motor':
         x = float(element.getAttribute('sodipodi:cx'))
         y = float(element.getAttribute('sodipodi:cy'))
-        motor_model = models.MotorModel()
+        motor_model = MotorModel()
         motor_model.anchor = transform * Point2(x, y)
         motor_model.torque = float(element_data.get('torque', '1'))
         motor_model.damping = float(element_data.get('damping', '0'))
@@ -195,14 +195,14 @@ def parse_path_element(element, transform, level_model):
     elif element_data.get('type') == 'camera':
         x = float(element.getAttribute('sodipodi:cx'))
         y = float(element.getAttribute('sodipodi:cy'))
-        camera_model = models.CameraModel()
+        camera_model = CameraModel()
         camera_model.anchor = transform * Point2(x, y)
         level_model.joint_models.append(camera_model)
     else:
         style = parse_style(element.getAttribute('style'))
         vertices, closed = parse_polygon(element.getAttribute('d'))
         vertices = [transform * v for v in vertices]
-        body_model = models.BodyModel()
+        body_model = BodyModel()
         body_model.id = element.getAttribute('id')
         stroke_width = float(style.get('stroke-width', '1'))
         radius = abs(transform * Vector2(stroke_width, 0)) / 2
@@ -212,14 +212,14 @@ def parse_path_element(element, transform, level_model):
                       group_index=int(element_data.get('group-index', '0')),
                       color=parse_color(style.get('stroke', '#000000')))
         for p1, p2 in izip(vertices[:-1], vertices[1:]):
-            polygon_model = models.PolygonModel(**kwargs)
+            polygon_model = PolygonModel(**kwargs)
             v = (p2 - p1).cross()
             v.normalize()
             v *= radius
             polygon_model.vertices = [p1 + v, p2 + v, p2 - v, p1 - v]
             body_model.shape_models.append(polygon_model)
             for center in p1, p2:
-                circle_model = models.CircleModel(center=center, radius=radius, **kwargs)
+                circle_model = CircleModel(center=center, radius=radius, **kwargs)
                 body_model.shape_models.append(circle_model)
         level_model.body_models.append(body_model)
 
@@ -243,7 +243,7 @@ def parse_circle_element(element, transform, level_model, body_model):
     rx = float(element.getAttribute('sodipodi:rx'))
     ry = float(element.getAttribute('sodipodi:ry'))
 
-    circle_model = models.CircleModel()
+    circle_model = CircleModel()
     circle_model.center = transform * Point2(cx, cy)
     circle_model.radius = abs(transform * Vector2((rx + ry) / 2, 0))
     circle_model.density = float(element_data.get('density', '0'))
@@ -267,7 +267,7 @@ def parse_rect_element(element, transform, level_model, body_model):
                 Point2(x + width, y + height),
                 Point2(x + width, y)]
 
-    polygon_model = models.PolygonModel()
+    polygon_model = PolygonModel()
     polygon_model.vertices = [tuple(transform * v) for v in vertices]
     polygon_model.density = float(element_data.get('density', '0'))
     polygon_model.friction = float(element_data.get('friction', '0.5'))

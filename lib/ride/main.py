@@ -1,12 +1,12 @@
 from __future__ import division
 
-import config
+import settings
 from gui import *
 
 import pyglet
 
 def main():
-    window = pyglet.window.Window(fullscreen=config.fullscreen)
+    window = pyglet.window.Window(fullscreen=settings.fullscreen)
     window.set_exclusive_keyboard(window.fullscreen)
     window.set_exclusive_mouse(window.fullscreen)
     TitleScreen(window)

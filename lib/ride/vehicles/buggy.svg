@@ -163,7 +163,8 @@ max-force: 100;</desc>
          id="desc2866">type: motor;
 torque: 150;
 damping: 5;
-clockwise-key: space;</desc>
+clockwise-key: space;
+counter-clockwise-key: down;</desc>
     </path>
     <path
        sodipodi:type="star"
