@@ -199,15 +199,18 @@ def parse_path_element(element, transform, level_model):
         camera_model.anchor = transform * Point2(x, y)
         level_model.joint_models.append(camera_model)
     else:
+        style = parse_style(element.getAttribute('style'))
         vertices, closed = parse_polygon(element.getAttribute('d'))
         vertices = [transform * v for v in vertices]
         body_model = models.BodyModel()
         body_model.id = element.getAttribute('id')
-        radius = 0.2
+        stroke_width = float(style.get('stroke-width', '1'))
+        radius = abs(transform * Vector2(stroke_width, 0)) / 2
         kwargs = dict(density=float(element_data.get('density', '0')),
                       friction=float(element_data.get('friction', '0.5')),
                       restitution=float(element_data.get('restitution', '0.5')),
-                      group_index=int(element_data.get('group-index', '0')))
+                      group_index=int(element_data.get('group-index', '0')),
+                      color=parse_color(style.get('stroke', '#000000')))
         for p1, p2 in izip(vertices[:-1], vertices[1:]):
             polygon_model = models.PolygonModel(**kwargs)
             v = (p2 - p1).cross()
@@ -220,9 +223,20 @@ def parse_path_element(element, transform, level_model):
                 body_model.shape_models.append(circle_model)
         level_model.body_models.append(body_model)
 
+def parse_color(color_str):
+    if color_str == 'none':
+        return 0, 0, 0, 0
+    assert len(color_str) == 7
+    assert color_str[0] == '#'
+    red = int(color_str[1:3], 16) / 255
+    green = int(color_str[3:5], 16) / 255
+    blue = int(color_str[5:7], 16) / 255
+    return red, green, blue, 1
+
 def parse_circle_element(element, transform, level_model, body_model):
     label = element.getAttribute('inkscape:label')
     element_data = parse_element_data(element)
+    style = parse_style(element.getAttribute('style'))
 
     cx = float(element.getAttribute('sodipodi:cx'))
     cy = float(element.getAttribute('sodipodi:cy'))
@@ -236,11 +250,14 @@ def parse_circle_element(element, transform, level_model, body_model):
     circle_model.friction = float(element_data.get('friction', '0.5'))
     circle_model.restitution = float(element_data.get('restitution', '0.5'))
     circle_model.group_index = int(element_data.get('group-index', '0'))
+    circle_model.color = parse_color(style.get('fill', 'none'))
     body_model.shape_models.append(circle_model)
 
 def parse_rect_element(element, transform, level_model, body_model):
     label = element.getAttribute('inkscape:label')
     element_data = parse_element_data(element)
+    style = parse_style(element.getAttribute('style'))
+
     x = float(element.getAttribute('x'))
     y = float(element.getAttribute('y'))
     width = float(element.getAttribute('width'))
@@ -256,4 +273,5 @@ def parse_rect_element(element, transform, level_model, body_model):
     polygon_model.friction = float(element_data.get('friction', '0.5'))
     polygon_model.restitution = float(element_data.get('restitution', '0.5'))
     polygon_model.group_index = int(element_data.get('group-index', '0'))
+    polygon_model.color = parse_color(style.get('fill', 'none'))
     body_model.shape_models.append(polygon_model)

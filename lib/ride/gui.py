@@ -70,7 +70,10 @@ class GameScreen(Screen):
         glScalef(scale, scale, scale)
         camera_x, camera_y = self.level_actor.camera
         glTranslatef(-camera_x, -camera_y, 0)
-        self.level_actor.debug_draw()
+        if config.debug:
+            self.level_actor.debug_draw()
+        else:
+            self.level_actor.draw()
         glPopMatrix()
         if config.fps:
             self.clock_display.draw()

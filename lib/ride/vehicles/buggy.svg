@@ -62,38 +62,8 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-308.2677)">
-    <path
-       sodipodi:type="arc"
-       style="fill:none;stroke:#000000;stroke-width:0.6177215;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="path2816"
-       sodipodi:cx="274"
-       sodipodi:cy="594.09448"
-       sodipodi:rx="72"
-       sodipodi:ry="72"
-       d="M 346,594.09448 A 72,72 0 1 1 202,594.09448 A 72,72 0 1 1 346,594.09448 z"
-       transform="matrix(1.61898,0,0,1.618725,-78.718124,-28.928131)"
-       inkscape:label="back-wheel">
-      <desc
-         id="desc2829">density: 0.5;
-friction: 10;</desc>
-    </path>
-    <path
-       sodipodi:type="arc"
-       style="fill:none;stroke:#000000;stroke-width:0.60690027;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       id="path2816-6"
-       sodipodi:cx="274"
-       sodipodi:cy="594.09448"
-       sodipodi:rx="72"
-       sodipodi:ry="72"
-       d="M 346,594.09448 A 72,72 0 1 1 202,594.09448 A 72,72 0 1 1 346,594.09448 z"
-       transform="matrix(1.6478467,0,0,-1.6475873,261.6024,1910.3158)"
-       inkscape:label="front-wheel">
-      <desc
-         id="desc2831">density: 0.5;
-friction: 10;</desc>
-    </path>
     <rect
-       style="fill:#00000d;fill-opacity:0.04705882;stroke:#000000;stroke-width:0.99999994;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#e9133b;fill-opacity:1;stroke:none;stroke-width:0.99999994000000003;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2840"
        width="364.93115"
        height="192.33498"
@@ -106,7 +76,37 @@ motor-torque: 5;
 motor-damping: 0.5;</desc>
     </rect>
     <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-opacity:1"
+       sodipodi:type="arc"
+       style="fill:#000000;stroke:none;stroke-width:0.61772150000000003;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
+       id="path2816"
+       sodipodi:cx="274"
+       sodipodi:cy="594.09448"
+       sodipodi:rx="72"
+       sodipodi:ry="72"
+       d="M 346,594.09448 C 346,633.85898 313.7645,666.09448 274,666.09448 C 234.2355,666.09448 202,633.85898 202,594.09448 C 202,554.32998 234.2355,522.09448 274,522.09448 C 313.7645,522.09448 346,554.32998 346,594.09448 z"
+       transform="matrix(1.61898,0,0,1.618725,-78.718124,-28.928131)"
+       inkscape:label="back-wheel">
+      <desc
+         id="desc2829">density: 0.5;
+friction: 10;</desc>
+    </path>
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;stroke:none;stroke-width:0.60690027000000002;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
+       id="path2816-6"
+       sodipodi:cx="274"
+       sodipodi:cy="594.09448"
+       sodipodi:rx="72"
+       sodipodi:ry="72"
+       d="M 346,594.09448 C 346,633.85898 313.7645,666.09448 274,666.09448 C 234.2355,666.09448 202,633.85898 202,594.09448 C 202,554.32998 234.2355,522.09448 274,522.09448 C 313.7645,522.09448 346,554.32998 346,594.09448 z"
+       transform="matrix(1.6478467,0,0,-1.6475873,261.6024,1910.3158)"
+       inkscape:label="front-wheel">
+      <desc
+         id="desc2831">density: 0.5;
+friction: 10;</desc>
+    </path>
+    <path
+       style="fill:none;stroke:#ceff00;stroke-width:1px;stroke-opacity:1"
        d="M 540.19136,901.52413 L 366.27243,931.87437"
        id="path2848"
        sodipodi:nodetypes="cc">
@@ -114,7 +114,7 @@ motor-damping: 0.5;</desc>
          id="desc3622">type: distance-joint;</desc>
     </path>
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.99999994px;stroke-opacity:1"
+       style="fill:none;stroke:#ceff00;stroke-width:0.99999994000000003px;stroke-opacity:1"
        d="M 712.30294,932.13505 L 537.75617,901.4823"
        id="path2848-2"
        sodipodi:nodetypes="cc">
@@ -122,7 +122,7 @@ motor-damping: 0.5;</desc>
          id="desc3622-1">type: distance-joint;</desc>
     </path>
     <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-opacity:1"
+       style="fill:none;stroke:#ceff00;stroke-width:1px;stroke-opacity:1"
        d="M 712.24444,933.06795 L 597.06197,738.41064"
        id="path2848-2-6"
        sodipodi:nodetypes="cc">
@@ -133,7 +133,7 @@ damping: 10;
 max-force: 100;</desc>
     </path>
     <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-opacity:1"
+       style="fill:none;stroke:#ceff00;stroke-width:1px;stroke-opacity:1"
        d="M 365.56414,933.06796 L 477.19854,740.18441"
        id="path2848-2-6-2"
        sodipodi:nodetypes="cc">
@@ -145,7 +145,7 @@ max-force: 100;</desc>
     </path>
     <path
        sodipodi:type="star"
-       style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#ceff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path2864"
        sodipodi:sides="5"
        sodipodi:cx="176.7767"
@@ -167,7 +167,7 @@ clockwise-key: space;</desc>
     </path>
     <path
        sodipodi:type="star"
-       style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#ceff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path2864-3"
        sodipodi:sides="5"
        sodipodi:cx="176.7767"
@@ -190,7 +190,7 @@ counter-clockwise-key: left;</desc>
     </path>
     <path
        sodipodi:type="star"
-       style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#ceff00;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path2864-3-4"
        sodipodi:sides="5"
        sodipodi:cx="176.7767"

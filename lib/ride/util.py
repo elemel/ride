@@ -11,12 +11,12 @@ def log(message):
     sys.stderr.write('ride: %s\n' % str(message))
 
 class CircleDisplayList(object):
-    def __init__(self, vertex_count=100):
+    def __init__(self, vertex_count=100, mode=GL_LINE_LOOP):
         assert vertex_count >= 1
         self.display_list = glGenLists(1)
         assert self.display_list
         glNewList(self.display_list, GL_COMPILE)
-        glBegin(GL_LINE_LOOP)
+        glBegin(mode)
         for i in xrange(vertex_count):
             angle = 2 * math.pi * i / vertex_count
             glVertex2f(math.cos(angle), math.sin(angle))

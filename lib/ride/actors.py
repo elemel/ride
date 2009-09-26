@@ -40,7 +40,9 @@ class LevelActor(Actor):
         for joint_model in level_model.joint_models:
             self.create_joint(joint_model)
 
-        self.circle_display_list = CircleDisplayList()
+        self.circle_line_loop_display_list = CircleDisplayList()
+        self.circle_polygon_display_list = CircleDisplayList(mode=GL_POLYGON)
+        self.display_lists = {}
         self.camera = 0, 0
 
     def get_bodies_at_point(self, point):
@@ -100,6 +102,35 @@ class LevelActor(Actor):
             joint_actor.step(dt)
         self.world.Step(dt, 10, 10)
 
+    def draw(self):
+        for body in self.world.bodyList:
+            glPushMatrix()
+            x, y = body.position.tuple()
+            glTranslatef(x, y, 0)
+            glRotatef(body.angle * 180 / math.pi, 0, 0, 1)
+            if body not in self.display_lists:
+                self.display_lists[body] = glGenLists(1)
+                glNewList(self.display_lists[body], GL_COMPILE)
+                self.draw_body(body)
+                glEndList()
+            glCallList(self.display_lists[body])
+            glPopMatrix()
+
+    def draw_body(self, body):
+        for shape in body.shapeList:
+            color = shape.userData
+            if color is None:
+                color = self.color
+            glColor4f(*color)
+            if isinstance(shape, b2.b2PolygonShape):
+                glBegin(GL_POLYGON)
+                for x, y in shape.vertices:
+                    glVertex2f(x, y)
+                glEnd()
+            elif isinstance(shape, b2.b2CircleShape):
+                self.circle_polygon_display_list.draw(shape.localPosition.tuple(),
+                                                      shape.radius)
+
     def debug_draw(self):
         for body in self.world.bodyList:
             self.debug_draw_body(body)
@@ -128,8 +159,8 @@ class LevelActor(Actor):
                     glVertex2f(x, y)
                 glEnd()
             elif isinstance(shape, b2.b2CircleShape):
-                self.circle_display_list.draw(shape.localPosition.tuple(),
-                                              shape.radius)
+                self.circle_line_loop_display_list.draw(shape.localPosition.tuple(),
+                                                        shape.radius)
         glPopMatrix()
 
     def on_key_press(self, symbol, modifiers):
@@ -169,7 +200,8 @@ class BodyActor(Actor):
             shape_def.friction = shape_model.friction
             shape_def.restitution = shape_model.restitution
             shape_def.filter.groupIndex = shape_model.group_index
-            self.body.CreateShape(shape_def)
+            shape = self.body.CreateShape(shape_def)
+            shape.userData = shape_model.color
         self.body.SetMassFromShapes()
 
 class JointActor(Actor):

@@ -40,8 +40,8 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="580.57508"
+     inkscape:zoom="1"
+     inkscape:cx="508.88869"
      inkscape:cy="287.77088"
      inkscape:current-layer="layer1"
      id="namedview2820"
@@ -59,7 +59,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
         <dc:description>width: 100;
 gravity: 10;</dc:description>
         <cc:license
@@ -111,12 +111,12 @@ gravity: 10;</dc:description>
          id="desc2854">type: goal;</desc>
     </path>
     <path
-       style="fill:none;stroke:#000000;stroke-width:6.65999985;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#ce319a;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="M 653.81516,443.90035 L 597.827,481.25247 L 517.28593,462.47256 L 510.04045,426.57975 L 611.11767,362.33572 L 674.13139,376.07266"
        id="path4770-0"
        sodipodi:nodetypes="cccccc" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:6.65999985;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#2b6896;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="M 57.724132,472.89174 L 316.0837,471.33558 L 384.13638,445.06722 L 417.94455,496.57673 L 475.1543,531.73705 L 537.38774,545.9759 L 707.76974,547.70218 L 738.76794,528.88523 L 757.3179,498.00656 L 757.34142,462.32399 L 738.53325,431.32243 L 993.03652,429.10567"
        id="path4770-2"
        sodipodi:nodetypes="cccccccccccc" />
