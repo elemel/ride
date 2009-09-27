@@ -63,11 +63,11 @@
      id="layer1"
      transform="translate(0,-308.2677)">
     <rect
-       style="fill:#e9133b;fill-opacity:1;stroke:none;stroke-width:0.99999994000000003;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#e9133b;fill-opacity:1;stroke:none"
        id="rect2840"
-       width="364.93115"
+       width="490.93115"
        height="192.33498"
-       x="357.05142"
+       x="299.05142"
        y="726.58759"
        inkscape:label="frame">
       <desc
@@ -128,7 +128,7 @@ friction: 10;</desc>
        sodipodi:nodetypes="cc">
       <desc
          id="desc3622-1-7">type: spring;
-spring-constant: 150;
+spring-constant: 200;
 damping: 10;
 max-force: 100;</desc>
     </path>
@@ -139,7 +139,7 @@ max-force: 100;</desc>
        sodipodi:nodetypes="cc">
       <desc
          id="desc3622-1-7-7">type: spring;
-spring-constant: 150;
+spring-constant: 200;
 damping: 10;
 max-force: 100;</desc>
     </path>
@@ -161,7 +161,7 @@ max-force: 100;</desc>
        transform="translate(190.91883,360.83624)">
       <desc
          id="desc2866">type: motor;
-torque: 150;
+torque: 200;
 damping: 5;
 clockwise-key: space;
 counter-clockwise-key: down;</desc>
@@ -184,8 +184,8 @@ counter-clockwise-key: down;</desc>
        transform="translate(362.53084,290.96219)">
       <desc
          id="desc2866-5">type: motor;
-torque: 5;
-damping: 0.5;
+torque: 10;
+damping: 1;
 clockwise-key: right;
 counter-clockwise-key: left;</desc>
     </path>
