@@ -185,7 +185,7 @@ counter-clockwise-key: down;</desc>
       <desc
          id="desc2866-5">type: motor;
 torque: 10;
-damping: 1;
+damping: 2;
 clockwise-key: right;
 counter-clockwise-key: left;</desc>
     </path>
