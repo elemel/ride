@@ -141,6 +141,11 @@ def parse_revolute_joint_element(element, transform, level_model,
     y = float(element.getAttribute('sodipodi:cy'))
     revolute_joint_model = RevoluteJointModel()
     revolute_joint_model.anchor = transform * Point2(x, y)
+    revolute_joint_model.motor_enabled = (element_data.get('motor-enabled') == 'true')
+    revolute_joint_model.motor_speed = float(element_data.get('motor-speed', '0'))
+    revolute_joint_model.max_motor_torque = float(element_data.get('max-motor-torque', '0'))
+    revolute_joint_model.clockwise_key = element_data.get('clockwise-key')
+    revolute_joint_model.counter_clockwise_key = element_data.get('counter-clockwise-key')
     level_model.joint_models.append(revolute_joint_model)
 
 def parse_distance_joint_element(element, transform, level_model):
@@ -150,11 +155,15 @@ def parse_distance_joint_element(element, transform, level_model):
     distance_joint_model.anchor_2 = line_segment.p2
     level_model.joint_models.append(distance_joint_model)
 
-def parse_prismatic_joint_element(element, transform, level_model):
+def parse_prismatic_joint_element(element, transform, level_model, element_data):
     line_segment = parse_line_segment_element(element, transform)
     prismatic_joint_model = PrismaticJointModel()
     prismatic_joint_model.anchor_1 = line_segment.p1
     prismatic_joint_model.anchor_2 = line_segment.p2
+    prismatic_joint_model.limit_enabled = (element_data.get('limit-enabled') == 'true')
+    prismatic_joint_model.motor_enabled = (element_data.get('motor-enabled') == 'true')
+    prismatic_joint_model.motor_speed = float(element_data.get('motor-speed', '0'))
+    prismatic_joint_model.max_motor_force = float(element_data.get('max-motor-force', '0'))
     level_model.joint_models.append(prismatic_joint_model)
 
 def parse_spring_element(element, transform, level_model, element_data):
@@ -179,7 +188,7 @@ def parse_path_element(element, transform, level_model):
     elif element_data.get('type') == 'distance-joint':
         parse_distance_joint_element(element, transform, level_model)
     elif element_data.get('type') == 'prismatic-joint':
-        parse_prismatic_joint_element(element, transform, level_model)
+        parse_prismatic_joint_element(element, transform, level_model, element_data)
     elif element_data.get('type') == 'spring':
         parse_spring_element(element, transform, level_model, element_data)
     elif element_data.get('type') == 'motor':

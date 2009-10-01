@@ -65,15 +65,7 @@ class LevelActor(Actor):
 
     def create_joint(self, joint_model):
         if isinstance(joint_model, RevoluteJointModel):
-            bodies = self.get_top_bodies_at_point(joint_model.anchor)
-            if len(bodies) == 1:
-                body_1 = bodies[0]
-                body_2 = self.world.GetGroundBody()
-            else:
-                body_1, body_2 = bodies
-            joint_def = b2.b2RevoluteJointDef()
-            joint_def.Initialize(body_1, body_2, tuple(joint_model.anchor))
-            self.world.CreateJoint(joint_def)
+            RevoluteJointActor(self, joint_model)
         elif isinstance(joint_model, DistanceJointModel):
             body_1 = self.get_top_body_at_point(joint_model.anchor_1)
             body_2 = self.get_top_body_at_point(joint_model.anchor_2)
@@ -85,10 +77,15 @@ class LevelActor(Actor):
             body_1 = self.get_top_body_at_point(joint_model.anchor_1)
             body_2 = self.get_top_body_at_point(joint_model.anchor_2)
             joint_def = b2.b2PrismaticJointDef()
-            axis = tuple(joint_model.anchor_2 - joint_model.anchor_1)
+            vector = joint_model.anchor_2 - joint_model.anchor_1
             joint_def.Initialize(body_1, body_2, tuple(joint_model.anchor_1),
-                                 axis)
-            self.world.CreateJoint(joint_def)
+                                 tuple(vector))
+            joint = self.world.CreateJoint(joint_def).asPrismaticJoint()
+            joint.EnableLimit(joint_model.limit_enabled)
+            joint.SetLimits(-abs(vector), 0)
+            joint.EnableMotor(joint_model.motor_enabled)
+            joint.SetMotorSpeed(joint_model.motor_speed)
+            joint.SetMaxMotorForce(joint_model.max_motor_force)
         elif isinstance(joint_model, SpringModel):
             SpringActor(self, joint_model)
         elif isinstance(joint_model, MotorModel):
@@ -208,6 +205,48 @@ class BodyActor(Actor):
 class JointActor(Actor):
     pass
 
+class RevoluteJointActor(JointActor):
+    def __init__(self, level_actor, joint_model):
+        super(RevoluteJointActor, self).__init__(joint_model)
+        self.level_actor = level_actor
+        bodies = self.level_actor.get_top_bodies_at_point(joint_model.anchor)
+        if len(bodies) == 1:
+            body_1 = bodies[0]
+            body_2 = self.level_actor.world.GetGroundBody()
+        else:
+            body_1, body_2 = bodies
+        joint_def = b2.b2RevoluteJointDef()
+        joint_def.Initialize(body_1, body_2, tuple(joint_model.anchor))
+        self.joint = self.level_actor.world.CreateJoint(joint_def).asRevoluteJoint()
+        self.motor_speed = joint_model.motor_speed
+        self.joint.SetMaxMotorTorque(joint_model.max_motor_torque)
+        self.clockwise_key = joint_model.clockwise_key
+        self.counter_clockwise_key = joint_model.counter_clockwise_key
+        self.throttle = 0
+        self.level_actor.extra_joint_actors.append(self)
+        self.level_actor.key_press_bindings[self.clockwise_key] = self.decrement_throttle
+        self.level_actor.key_release_bindings[self.clockwise_key] = self.increment_throttle
+        self.level_actor.key_press_bindings[self.counter_clockwise_key] = self.increment_throttle
+        self.level_actor.key_release_bindings[self.counter_clockwise_key] = self.decrement_throttle
+
+    def delete(self):
+        self.level_actor.key_press_bindings[self.clockwise_key] = None
+        self.level_actor.key_release_bindings[self.clockwise_key] = None
+        self.level_actor.key_press_bindings[self.counter_clockwise_key] = None
+        self.level_actor.key_release_bindings[self.counter_clockwise_key] = None
+        self.level_actor.extra_joint_actors.remove(self)
+        self.level_actor.world.DestroyJoint(self.joint)
+
+    def increment_throttle(self):
+        self.throttle += 1
+
+    def decrement_throttle(self):
+        self.throttle -= 1
+
+    def step(self, dt):
+        self.joint.EnableMotor(bool(self.throttle))
+        self.joint.SetMotorSpeed(self.throttle * self.motor_speed)
+
 class SpringActor(JointActor):
     def __init__(self, level_actor, spring_model):
         super(SpringActor, self).__init__(spring_model)
@@ -268,11 +307,11 @@ class MotorActor(JointActor):
         self.clockwise_key = motor_model.clockwise_key
         self.counter_clockwise_key = motor_model.counter_clockwise_key
         self.throttle = 0
+        self.level_actor.extra_joint_actors.append(self)
         self.level_actor.key_press_bindings[self.clockwise_key] = self.decrement_throttle
         self.level_actor.key_release_bindings[self.clockwise_key] = self.increment_throttle
         self.level_actor.key_press_bindings[self.counter_clockwise_key] = self.increment_throttle
         self.level_actor.key_release_bindings[self.counter_clockwise_key] = self.decrement_throttle
-        self.level_actor.extra_joint_actors.append(self)
 
     def delete(self):
         self.level_actor.key_press_bindings[self.clockwise_key] = None

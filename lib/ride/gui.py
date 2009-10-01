@@ -46,7 +46,7 @@ class GameScreen(Screen):
         self.time = 0
         self.world_time = 0
         level_model = svg.load_level('lib/ride/levels/bumps.svg')
-        svg.load_vehicle('lib/ride/vehicles/buggy.svg', level_model)
+        svg.load_vehicle('lib/ride/vehicles/boxer.svg', level_model)
         self.level_actor = LevelActor(level_model)
         pyglet.clock.schedule_interval(self.step, settings.dt)
 

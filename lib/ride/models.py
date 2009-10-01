@@ -44,11 +44,18 @@ class JointModel(Model):
     pass
 
 class RevoluteJointModel(JointModel):
-    def __init__(self, body_model_1=None, body_model_2=None, anchor=(0, 0)):
+    def __init__(self, body_model_1=None, body_model_2=None, anchor=(0, 0),
+                 motor_enabled=False, motor_speed=0, max_motor_torque=0,
+                 clockwise_key=None, counter_clockwise_key=None):
         super(RevoluteJointModel, self).__init__()
         self.body_model_1 = body_model_1
         self.body_model_2 = body_model_2
         self.anchor = anchor
+        self.motor_enabled = motor_enabled
+        self.motor_speed = motor_speed
+        self.max_motor_torque = max_motor_torque
+        self.clockwise_key = clockwise_key
+        self.counter_clockwise_key = counter_clockwise_key
 
 class DistanceJointModel(JointModel):
     def __init__(self, body_model_1=None, body_model_2=None, anchor_1=(0, 0),
@@ -67,6 +74,10 @@ class PrismaticJointModel(JointModel):
         self.body_model_2 = body_model_2
         self.anchor_1 = anchor_1
         self.anchor_2 = anchor_2
+        self.limit_enabled = False
+        self.motor_enabled = False
+        self.motor_speed = 0
+        self.max_motor_force = 0
 
 class MotorModel(JointModel):
     def __init__(self, body_model=None, anchor=(0, 0), torque=1, damping=0,
